@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { WingedStar } from "@/components/insignia";
+import { useSfx } from "@/components/sfx-provider";
 
 type Phase = "idle" | "verifying" | "granted" | "denied";
 
@@ -16,6 +17,7 @@ const STATUS: Record<Exclude<Phase, "idle">, string> = {
 
 export function LoginPanel() {
   const router = useRouter();
+  const { play } = useSfx();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [reveal, setReveal] = useState(false);
@@ -47,17 +49,20 @@ export function LoginPanel() {
         setAttempts((n) => n + 1);
         setDetail(data.message ?? "INVALID CREDENTIALS");
         setPhase("denied");
+        play("deny");
         setPassword("");
         return;
       }
 
       setPhase("granted");
+      play("confirm");
       // pausa curta antes de entregar o drama para a tela 02
       setTimeout(() => router.push("/authenticating"), 550);
     } catch {
       setAttempts((n) => n + 1);
       setDetail("UPLINK FAILURE — RETRY");
       setPhase("denied");
+      play("deny");
     }
   }
 

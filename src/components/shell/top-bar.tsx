@@ -3,6 +3,7 @@
 import Image from "next/image";
 
 import { useCharacter } from "@/components/character-provider";
+import { useSfx } from "@/components/sfx-provider";
 import { ShieldIcon } from "@/components/shell/nav-icons";
 
 const SAVE_COPY = {
@@ -14,6 +15,7 @@ const SAVE_COPY = {
 
 export function TopBar() {
   const { character, status } = useCharacter();
+  const { enabled, toggle } = useSfx();
   const save = SAVE_COPY[status];
 
   return (
@@ -62,6 +64,20 @@ export function TopBar() {
               {character.identity.clearance}
             </p>
           </div>
+          <button
+            type="button"
+            onClick={toggle}
+            data-sfx="none"
+            aria-pressed={enabled}
+            aria-label={enabled ? "Desligar sons do sistema" : "Ligar sons do sistema"}
+            className={`touch-target rounded-[2px] border border-line p-2 transition-colors
+                        hover:border-mil-dim hover:text-mil-bright ${
+                          enabled ? "text-mil" : "text-bone-dim/50"
+                        }`}
+          >
+            {enabled ? <SpeakerIcon className="h-4 w-4" /> : <SpeakerOffIcon className="h-4 w-4" />}
+          </button>
+
           <div className="flex items-center gap-2.5 border-l border-line pl-3">
             <Image
               src="/armada-portrait.png"
@@ -94,5 +110,37 @@ export function TopBar() {
         </p>
       )}
     </>
+  );
+}
+
+type IconProps = React.SVGProps<SVGSVGElement>;
+
+function SpeakerIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden fill="currentColor" {...props}>
+      <path d="M3 9h4l5-4v14l-5-4H3z" />
+      <path
+        d="M16 8.5a5 5 0 010 7M18.6 6a8.6 8.6 0 010 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function SpeakerOffIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden fill="currentColor" {...props}>
+      <path d="M3 9h4l5-4v14l-5-4H3z" />
+      <path
+        d="M16 9.5l5 5M21 9.5l-5 5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }

@@ -83,6 +83,7 @@ export function SkillsPanel() {
                       draft.skills[index].proficiency = NEXT_PROFICIENCY[skill.proficiency];
                     })
                   }
+                  data-sfx={skill.proficiency === "none" ? "restore" : "tick"}
                   aria-label={`${skill.name}: ${PROFICIENCY_LABEL[skill.proficiency]}. Clique para alternar`}
                   className="touch-target w-8 shrink-0 rounded-[2px] text-right text-[0.65rem] leading-none text-brass
                              transition-colors hover:bg-white/5 hover:text-mil-bright

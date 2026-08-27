@@ -41,6 +41,7 @@ export function WarTacticsPanel() {
             <button
               type="button"
               disabled={spent === 0}
+              data-sfx="rest"
               onClick={() =>
                 update((draft) => {
                   draft.warTactics.spent = draft.warTactics.spent.map(() => 0);
@@ -142,6 +143,7 @@ function StarSlot({
                       );
                     })
                   }
+                  data-sfx={filled ? "spend" : "restore"}
                   aria-label={`Slot ${index + 1} de ${total} do ${starLevel}º nível: ${
                     filled ? "disponível — clique para gastar" : "gasto — clique para recuperar"
                   }`}

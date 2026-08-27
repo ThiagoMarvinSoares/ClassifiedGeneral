@@ -151,3 +151,19 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
   parte da informação.
 - É um `<dialog>` nativo (foco preso e Esc de graça). Ele precisa de `m-auto`:
   o preflight do Tailwind zera a margem que o centraliza.
+
+## Som
+
+- Sintetizado com Web Audio em `src/lib/sfx.ts` — nenhum arquivo de áudio, pelo
+  mesmo motivo das texturas. Notas curtas e secas: som de interface que se
+  repete não pode ter cauda.
+- Um ouvinte de clique só, no documento, em vez de `onClick` em cada botão. O
+  elemento escolhe o som por `data-sfx="spend|restore|confirm|deny|rest|none"`;
+  sem o atributo, botão/link/summary tocam o tick padrão.
+- Para som que não vem de clique (login negado, passos da sequência de
+  autenticação), use o `play` do `useSfx`.
+- A preferência mora no `localStorage` e é lida com `useSyncExternalStore`, não
+  com estado espelhado num efeito.
+- O navegador só libera áudio depois de um gesto do usuário; como todo som
+  parte de um clique, o `AudioContext` é criado na primeira vez e resumido se
+  estiver suspenso.

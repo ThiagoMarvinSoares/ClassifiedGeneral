@@ -115,3 +115,12 @@ e o resto vira margem, como numa página de verdade.
 O inventário. Fundos em gold, silver e copper, e os itens com quantidade, notas
 e um marcador `CARRIED` / `STOWED` para separar o que está em uso do que está
 guardado. O contador do cabeçalho mostra quantos itens estão sendo carregados.
+
+## Som
+
+A interface tem som: um tick nos cliques, um tom descendente ao gastar um star
+slot e ascendente ao recuperar, um acorde na long rest, e confirmação ou recusa
+no login. Tudo sintetizado na hora, sem arquivo de áudio.
+
+O alto-falante na barra superior liga e desliga, e a escolha fica guardada no
+navegador.

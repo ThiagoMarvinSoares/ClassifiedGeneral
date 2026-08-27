@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useSfx } from "@/components/sfx-provider";
+
 /* ─────────────────────────────────────────────────────────────
    Roteiro do boot. Cada passo ocupa uma fatia da linha do tempo;
    o que aparece na tela é derivado do tempo decorrido, então
@@ -44,6 +46,7 @@ const TOTAL = TIMELINE.at(-1)!.start + TIMELINE.at(-1)!.ms;
 
 export function AuthSequence() {
   const router = useRouter();
+  const { play } = useSfx();
   const [elapsed, setElapsed] = useState(0);
   const skipped = useRef(false);
   const done = useRef(false);
@@ -87,6 +90,15 @@ export function AuthSequence() {
   }, [skip]);
 
   const granted = elapsed >= TIMELINE.at(-1)!.start;
+
+  // um bipe por passo concluído, sem repetir quando o quadro reprocessa
+  const soundedSteps = useRef(0);
+  useEffect(() => {
+    const done = TIMELINE.filter((step) => elapsed >= step.start + step.ms).length;
+    if (done <= soundedSteps.current) return;
+    soundedSteps.current = done;
+    play(done === TIMELINE.length ? "confirm" : "tick");
+  }, [elapsed, play]);
 
   return (
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden px-3 py-12 sm:px-6">

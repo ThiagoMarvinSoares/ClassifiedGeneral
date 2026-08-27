@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Mrs_Saint_Delafield, Oswald, Special_Elite } from "next/font/google";
+import { SfxProvider } from "@/components/sfx-provider";
 import "./globals.css";
 
 const oswald = Oswald({
@@ -42,7 +43,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${oswald.variable} ${typewriter.variable} ${script.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <SfxProvider>{children}</SfxProvider>
+      </body>
     </html>
   );
 }

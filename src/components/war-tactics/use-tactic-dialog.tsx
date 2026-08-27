@@ -91,6 +91,7 @@ function LevelChoice({
     <button
       type="button"
       disabled={disabled}
+      data-sfx={disabled ? "none" : "spend"}
       onClick={() => onPick(tacticLevel)}
       className={`flex w-full items-center gap-3 rounded-[2px] border px-3 py-2.5 text-left transition-colors ${
         disabled
