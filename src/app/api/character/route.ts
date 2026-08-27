@@ -22,5 +22,20 @@ export async function PUT(request: Request) {
     return NextResponse.json({ ok: false, message: "MALFORMED RECORD" }, { status: 400 });
   }
 
-  return NextResponse.json({ ok: true, character: await writeCharacter(body) });
+  try {
+    return NextResponse.json({ ok: true, character: await writeCharacter(body) });
+  } catch (error) {
+    // disco somente-leitura é o caso normal em hospedagem serverless
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "EROFS" || code === "EACCES" || code === "EPERM") {
+      return NextResponse.json(
+        { ok: false, code: "READ_ONLY", message: "STORAGE READ-ONLY — CHANGES NOT SAVED" },
+        { status: 503 },
+      );
+    }
+    return NextResponse.json(
+      { ok: false, code: "WRITE_FAILED", message: "RECORD WRITE FAILED" },
+      { status: 500 },
+    );
+  }
 }

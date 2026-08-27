@@ -18,6 +18,8 @@ type CharacterContextValue = {
   /** Aplica uma mutação sobre uma cópia — o autosave dispara sozinho. */
   update: (recipe: (draft: Character) => void) => void;
   status: SaveStatus;
+  /** Motivo da última falha, para a barra dizer o que houve. */
+  error: string | null;
 };
 
 const CharacterContext = createContext<CharacterContextValue | null>(null);
@@ -33,6 +35,7 @@ export function CharacterProvider({
 }) {
   const [character, setCharacter] = useState(initial);
   const [status, setStatus] = useState<SaveStatus>("idle");
+  const [error, setError] = useState<string | null>(null);
   const pristine = useRef(true);
 
   const update = useCallback((recipe: (draft: Character) => void) => {
@@ -59,9 +62,18 @@ export function CharacterProvider({
           body: JSON.stringify(character),
           signal: controller.signal,
         });
-        setStatus(response.ok ? "saved" : "error");
+        if (response.ok) {
+          setStatus("saved");
+          setError(null);
+          return;
+        }
+        const data: { message?: string } = await response.json().catch(() => ({}));
+        setError(data.message ?? "SYNC FAILED");
+        setStatus("error");
       } catch {
-        if (!controller.signal.aborted) setStatus("error");
+        if (controller.signal.aborted) return;
+        setError("NO CONNECTION TO RECORD SERVER");
+        setStatus("error");
       }
     }, SAVE_DEBOUNCE_MS);
 
@@ -79,7 +91,7 @@ export function CharacterProvider({
   }, [status]);
 
   return (
-    <CharacterContext.Provider value={{ character, update, status }}>
+    <CharacterContext.Provider value={{ character, update, status, error }}>
       {children}
     </CharacterContext.Provider>
   );

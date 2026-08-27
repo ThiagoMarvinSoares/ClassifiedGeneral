@@ -14,9 +14,10 @@ const SAVE_COPY = {
 } as const;
 
 export function TopBar() {
-  const { character, status } = useCharacter();
+  const { character, status, error } = useCharacter();
   const { enabled, toggle } = useSfx();
-  const save = SAVE_COPY[status];
+  const base = SAVE_COPY[status];
+  const save = base && status === "error" ? { ...base, text: error ?? base.text } : base;
 
   return (
     <>
