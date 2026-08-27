@@ -77,18 +77,40 @@ function TacticGroup({
 }) {
   if (entries.length === 0) return null;
 
+  // <details> nativo: teclado, semântica e o próprio toggle já vêm de graça
   return (
-    <section>
-      <header className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line-soft pb-2">
+    <details open className="group/details">
+      <summary
+        className="flex cursor-pointer list-none flex-wrap items-baseline gap-x-3 gap-y-1 border-b
+                   border-line-soft pb-2 transition-colors hover:border-mil-dim
+                   focus-visible:outline-none focus-visible:border-mil-bright
+                   [&::-webkit-details-marker]:hidden"
+      >
+        <ChevronIcon
+          className="h-2.5 w-2.5 shrink-0 self-center text-brass transition-transform
+                     group-open/details:rotate-90"
+        />
         <h3 className="text-[0.62rem] font-bold uppercase tracking-[0.26em] text-brass">{title}</h3>
         <p className="text-[0.55rem] uppercase tracking-[0.14em] text-bone-dim/60">{note}</p>
-      </header>
-      <ul className="grid items-start gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        <span className="ml-auto text-[0.55rem] tabular-nums text-bone-dim/50">
+          {entries.length}
+        </span>
+      </summary>
+
+      <ul className="mt-3 grid items-start gap-4 md:grid-cols-2 2xl:grid-cols-3">
         {entries.map(({ tactic, index }) => (
           <TacticCard key={tactic.id} tactic={tactic} index={index} />
         ))}
       </ul>
-    </section>
+    </details>
+  );
+}
+
+function ChevronIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden fill="currentColor" {...props}>
+      <path d="M7 2l13 10L7 22z" />
+    </svg>
   );
 }
 

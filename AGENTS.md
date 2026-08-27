@@ -125,6 +125,9 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
 - `atWill` é o que separa os dois grupos do painel: **Basic** (não gasta slot,
   não escala) e **War Tactics** (gasta slot, pode escalar). Alternar o rótulo
   do card move ele de grupo na hora.
+- Os grupos recolhem com `<details>` nativo: teclado, semântica e o toggle vêm
+  de graça, sem estado em React. Abertos por padrão; a escolha não persiste
+  entre navegações.
 - `Tactic.scaling` é a "Potência": o que a tática ganha ao ser usada com um slot
   acima do custo base. Só aparece nas de slot — Potência numa habilidade que não
   gasta slot não quer dizer nada. Campo livre, porque cada uma escala diferente.

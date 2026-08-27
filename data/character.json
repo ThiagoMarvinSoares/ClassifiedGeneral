@@ -274,19 +274,19 @@
           "id": "basic-soldier",
           "level": 1,
           "name": "Basic Soldier",
-          "action": "Bonus Action — Shoot!",
-          "description": "Você ordena o soldado a atirar em um inimigo. Faça um spell attack; em um acerto você dá 1d6 + wisdom de dano.",
           "ac": "",
-          "hp": ""
+          "hp": "",
+          "action": "Bonus Action — Shoot!",
+          "description": "Você ordena o soldado a atirar em um inimigo. Faça um spell attack; em um acerto você dá 1d6 + wisdom de dano."
         },
         {
           "id": "basic-medic",
           "level": 3,
           "name": "Basic Medic",
-          "action": "Bonus Action — Patch Em' Up!",
-          "description": "Você ordena o médico a cuidar das feridas de um aliado em até 30 ft de você. O aliado recebe 1d4 + wisdom de vida temporária.",
           "ac": "",
-          "hp": ""
+          "hp": "",
+          "action": "Bonus Action — Patch Em' Up!",
+          "description": "Você ordena o médico a cuidar das feridas de um aliado em até 30 ft de você. O aliado recebe 1d4 + wisdom de vida temporária."
         }
       ]
     },
