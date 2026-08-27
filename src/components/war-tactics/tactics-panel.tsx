@@ -12,6 +12,12 @@ import { findAvailableSlotRow, tacticLevelOptions, type Tactic } from "@/lib/cha
 export function TacticsPanel() {
   const { character, update } = useCharacter();
 
+  // o índice original acompanha o card: é por ele que a edição encontra a
+  // tática dentro da lista completa
+  const entries = character.tactics.map((tactic, index) => ({ tactic, index }));
+  const basic = entries.filter((entry) => entry.tactic.atWill);
+  const slotted = entries.filter((entry) => !entry.tactic.atWill);
+
   return (
     <SectionPanel
       title="Tactics"
@@ -42,12 +48,47 @@ export function TacticsPanel() {
         </button>
       }
     >
+      <div className="space-y-7">
+        <TacticGroup
+          title="Basic"
+          note="Sem custo. Não gasta slot e não escala."
+          entries={basic}
+        />
+        <TacticGroup
+          title="War Tactics"
+          note="Gastam um slot. Podem ser usadas em nível mais alto."
+          entries={slotted}
+        />
+      </div>
+    </SectionPanel>
+  );
+}
+
+type Entry = { tactic: Tactic; index: number };
+
+function TacticGroup({
+  title,
+  note,
+  entries,
+}: {
+  title: string;
+  note: string;
+  entries: Entry[];
+}) {
+  if (entries.length === 0) return null;
+
+  return (
+    <section>
+      <header className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line-soft pb-2">
+        <h3 className="text-[0.62rem] font-bold uppercase tracking-[0.26em] text-brass">{title}</h3>
+        <p className="text-[0.55rem] uppercase tracking-[0.14em] text-bone-dim/60">{note}</p>
+      </header>
       <ul className="grid items-start gap-4 md:grid-cols-2 2xl:grid-cols-3">
-        {character.tactics.map((tactic, index) => (
+        {entries.map(({ tactic, index }) => (
           <TacticCard key={tactic.id} tactic={tactic} index={index} />
         ))}
       </ul>
-    </SectionPanel>
+    </section>
   );
 }
 
@@ -201,7 +242,7 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
           </ul>
         )}
 
-        {tactic.scaling && (
+        {!tactic.atWill && (
           <div>
             <p className="mb-1 text-[0.5rem] font-medium uppercase tracking-[0.24em] text-brass/70">
               Potência
@@ -210,6 +251,7 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
               label="Escalonamento por slot extra"
               value={tactic.scaling}
               multiline
+              placeholder="Sem escalonamento"
               onCommit={(next) => edit((t) => void (t.scaling = next))}
               className="block w-full text-[0.68rem] leading-relaxed text-bone-dim/80"
             />
@@ -329,15 +371,7 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
               + Balance rule
             </button>
           )}
-          {!tactic.scaling && (
-            <button
-              type="button"
-              onClick={() => edit((t) => void (t.scaling = "—"))}
-              className="text-[0.5rem] uppercase tracking-[0.2em] text-bone-dim/50 transition-colors hover:text-mil-bright"
-            >
-              + Potência
-            </button>
-          )}
+
           <button
             type="button"
             onClick={() => update((draft) => void draft.tactics.splice(index, 1))}

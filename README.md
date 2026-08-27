@@ -80,8 +80,11 @@ Air Support e Tactical Command, com fala, descrição, balance rule, as ordens d
 Tactical Command e as tropas que One Man Army invoca. Tudo editável, e dá para
 adicionar e remover táticas, ordens e tropas.
 
-One Man Army é o ataque básico: ela substitui a ação de Attack, então é `AT WILL`
-e não tem botão USE. As tropas dela mostram em que nível de ARMADA são liberadas,
+As táticas ficam em dois grupos. **Basic** não gasta slot nem escala — hoje só
+One Man Army, que substitui a ação de Attack e por isso nem tem botão USE.
+**War Tactics** gasta um slot e pode ser usada em nível mais alto, com o ganho
+descrito no campo Potência. Clicar no rótulo `AT WILL` / `SLOT` do card troca
+o grupo. As tropas dela mostram em que nível de ARMADA são liberadas,
 e as que você ainda não alcançou aparecem `LOCKED`.
 
 Cada tática é marcada como `AT WILL` ou `SLOT`, e o rótulo alterna com um
