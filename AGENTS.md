@@ -24,10 +24,13 @@ A UI é **em inglês militar** (é parte da ficção); comentários e docs em po
   record não usa `SectionLayout` — ela é a folha inteira, sem painel ao lado.
 - `src/components/shell/sections.tsx` — a lista de seções é a fonte única da
   navegação lateral, das setas e da paginação de rodapé
-- `SectionLayout` monta a grade de cada página: ficha à esquerda, painel da
-  seção à direita e um `below` opcional em largura inteira. A `AppShell` não
-  monta mais essa grade — quem compõe é a página. No celular tudo empilha na
-  ordem de leitura do dossiê: ficha primeiro, painéis da seção abaixo.
+- A ficha em papel aparece só onde ela é o assunto: no Dossier (via
+  `SectionLayout`) e no Service Record, que é outra página do mesmo documento.
+  War Tactics, Footlocker e os stubs usam a largura inteira — encostar a ficha
+  em toda seção só empurrava o conteúdo para baixo.
+- `SectionLayout` monta a grade do Dossier: ficha à esquerda, painel à direita
+  e um `below` opcional em largura inteira. No celular empilha na ordem de
+  leitura: ficha primeiro, painéis abaixo.
 - `src/app/dossier/` — tela 03 em diante (placeholder por enquanto)
 - `src/app/api/auth/` — valida credencial e emite o cookie de sessão
 - `src/lib/session.ts` — único lugar que lê `ARMADA_ACCESS_*` e o cookie

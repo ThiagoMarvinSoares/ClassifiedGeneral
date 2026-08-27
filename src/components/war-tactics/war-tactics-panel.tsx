@@ -72,7 +72,7 @@ export function WarTacticsPanel() {
         Level {character.level} · click a star to expend a slot, click again to recover it
       </p>
 
-      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-9">
         {Array.from({ length: MAX_TACTIC_LEVEL }, (_, index) => (
           <li key={index}>
             <StarSlot character={character} starLevel={index + 1} onChange={update} />
