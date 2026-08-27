@@ -160,14 +160,15 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
       </header>
 
       <div className="flex flex-1 flex-col gap-3 px-4 py-3">
-        <EditText
-          label="Fala da tática"
-          value={tactic.quote}
-          placeholder="—"
-          multiline
-          onCommit={(next) => edit((t) => void (t.quote = next))}
-          className="block w-full border-l-2 border-brass/50 pl-3 text-[0.7rem] italic leading-relaxed text-brass/90"
-        />
+        {tactic.quote && (
+          <EditText
+            label="Fala da tática"
+            value={tactic.quote}
+            multiline
+            onCommit={(next) => edit((t) => void (t.quote = next))}
+            className="block w-full border-l-2 border-brass/50 pl-3 text-[0.7rem] italic leading-relaxed text-brass/90"
+          />
+        )}
         <EditText
           label="Descrição da tática"
           value={tactic.description}
@@ -278,11 +279,11 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
                         <EditNumber
                           label={`Nível que libera ${unit.name}`}
                           value={unit.level}
-                          min={1}
+                          min={0}
                           onCommit={(next) =>
                             edit((t) => void (t.units[unitIndex].level = next))
                           }
-                          format={(value) => `LV${value}`}
+                          format={(value) => (value === 0 ? "—" : `LV${value}`)}
                           className="text-[0.5rem] uppercase tracking-[0.18em] text-brass"
                         />
                         <EditText
@@ -298,6 +299,28 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
                         </span>
                       )}
                     </div>
+                    {(unit.ac || unit.hp) && (
+                      <dl className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-line-soft bg-line-soft">
+                        {([["AC", "ac"], ["HP", "hp"]] as const).map(([rotulo, chave]) => (
+                          <div key={chave} className="flex items-baseline gap-2 bg-black/40 px-2 py-1.5">
+                            <dt className="text-[0.5rem] font-medium uppercase tracking-[0.2em] text-bone-dim/60">
+                              {rotulo}
+                            </dt>
+                            <dd className="min-w-0 flex-1">
+                              <EditText
+                                label={`${rotulo} da tropa`}
+                                value={unit[chave]}
+                                placeholder="—"
+                                onCommit={(next) =>
+                                  edit((t) => void (t.units[unitIndex][chave] = next))
+                                }
+                                className="w-full text-[0.65rem] text-bone"
+                              />
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    )}
                     <EditText
                       label="Ação da tropa"
                       value={unit.action}
@@ -351,8 +374,10 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
               edit((t) =>
                 void t.units.push({
                   id: `unit-${t.units.length}-${Date.now()}`,
-                  level: 1,
+                  level: 0,
                   name: "New unit",
+                  ac: "",
+                  hp: "",
                   action: "",
                   description: "",
                 }),
@@ -362,6 +387,15 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
           >
             + Add unit
           </button>
+          {!tactic.quote && (
+            <button
+              type="button"
+              onClick={() => edit((t) => void (t.quote = "—"))}
+              className="text-[0.5rem] uppercase tracking-[0.2em] text-bone-dim/50 transition-colors hover:text-mil-bright"
+            >
+              + Quote
+            </button>
+          )}
           {!tactic.rule && (
             <button
               type="button"

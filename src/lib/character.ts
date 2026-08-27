@@ -125,9 +125,12 @@ export type ServiceRecord = {
 /** Tropa que a tática pode invocar, liberada num nível de classe. */
 export type SummonUnit = {
   id: string;
-  /** Nível de ARMADA que libera a tropa. */
+  /** Nível de ARMADA que libera a tropa; 0 quando não depende de nível. */
   level: number;
   name: string;
+  /** Fórmulas, não números: "8 + nível de ★". Vazio quando não há ficha. */
+  ac: string;
+  hp: string;
   action: string;
   description: string;
 };
@@ -375,6 +378,8 @@ export const DEFAULT_CHARACTER: Character = {
           id: "basic-soldier",
           level: 1,
           name: "Basic Soldier",
+          ac: "",
+          hp: "",
           action: "Bonus Action — Shoot!",
           description:
             "Você ordena o soldado a atirar em um inimigo. Faça um spell attack; em um acerto você dá 1d6 + wisdom de dano.",
@@ -383,6 +388,8 @@ export const DEFAULT_CHARACTER: Character = {
           id: "basic-medic",
           level: 3,
           name: "Basic Medic",
+          ac: "",
+          hp: "",
           action: "Bonus Action — Patch Em' Up!",
           description:
             "Você ordena o médico a cuidar das feridas de um aliado em até 30 ft de você. O aliado recebe 1d4 + wisdom de vida temporária.",
@@ -390,16 +397,15 @@ export const DEFAULT_CHARACTER: Character = {
       ],
     },
     {
-      id: "air-support",
-      name: "Air Support",
-      kind: "Dano / Controle • Recurso limitado",
+      id: "gun-run",
+      name: "Gun Run",
+      kind: "Action • 1★",
       atWill: false,
       quote: "GET SOME!",
       description:
-        "Você solicita suporte aéreo. Uma aeronave das suas visões atravessa o campo de batalha e realiza uma única passada de ataque. Escolha uma área ou linha dentro do alcance permitido pelo sistema.",
-      rule:
-        "O dano deve ser equivalente à habilidade ofensiva forte disponível para um personagem de nível 4. Não permanece no campo: o avião entra, executa a missão e desaparece.",
-      scaling: "",
+        "Você invoca um P-51 para fuzilar inimigos no campo de batalha. Escolha uma linha de 30 ft; inimigos nessa área fazem um saving throw de Dexterity, e numa falha recebem 3d6 de dano piercing, ou metade num sucesso.",
+      rule: "",
+      scaling: "(+1★) O dano aumenta em 1d6.",
       orders: [],
       units: [],
     },
@@ -451,6 +457,69 @@ export const DEFAULT_CHARACTER: Character = {
         "Você invoca um soldado que joga uma granada no meio dos seus inimigos. Escolha uma área de 3x3; inimigos nessa área fazem um saving throw de Dexterity, e numa falha recebem 3d6 de fire damage, ou metade num sucesso.",
       rule: "",
       scaling: "(+1★) O dano aumenta em 1d6.",
+      orders: [],
+      units: [],
+    },
+    {
+      id: "uav",
+      name: "UAV",
+      kind: "Action • 1 turno • 1★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você invoca um UAV que detecta inimigos e te informa a localização deles no mapa por rádio. Enquanto o UAV estiver no campo de batalha, o flanqueamento por inimigos é desativado.",
+      rule: "",
+      scaling: "",
+      orders: [],
+      units: [],
+    },
+    {
+      id: "get-down-mr-commander",
+      name: "Get Down, Mr. Commander!",
+      kind: "Reaction • 1 round • 1★",
+      atWill: false,
+      quote: "GET DOWN, MR. COMMANDER!",
+      description:
+        "Quando você estiver prestes a ser atacado, um soldado é invocado, pulando em direção ao ataque para proteger seu general. Até o início do seu próximo turno, você recebe um bônus de +5 para sua AC.",
+      rule: "",
+      scaling: "",
+      orders: [],
+      units: [],
+    },
+    {
+      id: "rpg-soldier",
+      name: "RPG Soldier",
+      kind: "Action • Concentration, 1 minuto • 1★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você invoca um soldado carregando um Rocket Launcher. O soldado compartilha da sua iniciativa e do seu spell DC. Você pode ordenar ele como uma free action no seu turno.",
+      rule: "",
+      scaling: "(+2★) O dano aumenta em 1d4.",
+      orders: [],
+      units: [
+        {
+          id: "rpg-soldier-sheet",
+          level: 0,
+          name: "RPG Soldier",
+          ac: "8 + nível de ★",
+          hp: "12 + 3 para cada nível acima de 1★",
+          action: "Shoot! • Action, 60 ft range, 5 ft area",
+          description:
+            "O soldado atira com o RPG em direção a um alvo. O alvo e todos à volta dele fazem um saving throw de Dexterity. Em uma falha recebem 1d4 + wisdom de fire damage, ou metade num sucesso.",
+        },
+      ],
+    },
+    {
+      id: "suppression-fire",
+      name: "Suppression Fire",
+      kind: "Action • 1 turno • 1★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você invoca soldados armados e os ordena a proteger a área ao redor de um aliado. Os soldados fuzilam qualquer inimigo a 5 ft ao redor do alvo escolhido, fazendo inimigos na área terem desvantagem para atacar e terem sua AC reduzida em 1.",
+      rule: "",
+      scaling: "",
       orders: [],
       units: [],
     },
@@ -643,13 +712,17 @@ export function sanitizeCharacter(input: unknown): Character {
                 id: `unit-${i}`,
                 level: 1,
                 name: "—",
+                ac: "",
+                hp: "",
                 action: "",
                 description: "",
               };
               return {
                 id: str(unit.id, unitFallback.id),
-                level: int(unit.level, unitFallback.level, 1, MAX_CHARACTER_LEVEL),
+                level: int(unit.level, unitFallback.level, 0, MAX_CHARACTER_LEVEL),
                 name: str(unit.name, unitFallback.name),
+                ac: str(unit.ac, unitFallback.ac ?? ""),
+                hp: str(unit.hp, unitFallback.hp ?? ""),
                 action: str(unit.action, unitFallback.action),
                 description: str(unit.description, unitFallback.description),
               };

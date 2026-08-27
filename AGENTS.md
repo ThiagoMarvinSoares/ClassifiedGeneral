@@ -115,9 +115,13 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
 - Uma tática ou é `atWill` (habilidade básica, sem custo e sem botão USE) ou
   gasta slot. One Man Army é `atWill`: ela **substitui** a ação de Attack, então
   não é recurso à parte.
-- `Tactic.units` são as tropas que a tática invoca, cada uma liberada num nível
-  de classe. As de nível acima do personagem aparecem marcadas `LOCKED`. Quando
-  a seção Personnel existir, é daqui que ela deve ler as tropas.
+- `Tactic.units` são as tropas que a tática invoca. Servem para dois casos: as
+  do One Man Army são liberadas por nível de classe (acima do nível do
+  personagem ficam `LOCKED`), e a do RPG Soldier é uma ficha de criatura com
+  `ac` e `hp`. `level: 0` significa "não depende de nível" e esconde a etiqueta.
+- `ac` e `hp` são string, não número: no RPG Soldier são fórmulas
+  ("8 + nível de ★"), não valores fixos.
+- Quando a seção Personnel existir, é daqui que ela deve ler as tropas.
 - `atWill` é o que separa os dois grupos do painel: **Basic** (não gasta slot,
   não escala) e **War Tactics** (gasta slot, pode escalar). Alternar o rótulo
   do card move ele de grupo na hora.
