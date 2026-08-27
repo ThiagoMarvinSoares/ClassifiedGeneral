@@ -11,9 +11,12 @@ import {
   ABILITIES,
   ABILITY_LABEL,
   abilityModifier,
+  attackRoll,
+  baseDamageRoll,
   MAX_CHARACTER_LEVEL,
   proficiencyBonus,
   signed,
+  spellSaveDC,
 } from "@/lib/character";
 
 export function DossierSheet() {
@@ -171,6 +174,24 @@ export function DossierSheet() {
 
             {/* resumo de combate */}
             <Panel title="Combat Summary">
+              {/* derivados do nível e do Wisdom — não se editam à mão */}
+              <div className="grid grid-cols-4 divide-x divide-ink/20 border-b border-ink/20 text-center">
+                {(
+                  [
+                    ["PB", signed(proficiencyBonus(character.level))],
+                    ["DC", String(spellSaveDC(character))],
+                    ["Attack", signed(attackRoll(character))],
+                    ["Damage", signed(baseDamageRoll(character))],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div key={label} className="px-1 py-2">
+                    <p className="text-[0.45rem] font-medium uppercase tracking-[0.2em] text-ink-soft">
+                      {label}
+                    </p>
+                    <p className="text-[0.9rem] font-bold leading-none text-ink">{value}</p>
+                  </div>
+                ))}
+              </div>
               <div className="grid grid-cols-3 divide-x divide-ink/20 border-b border-ink/20">
                 <Stat label="AC">
                   <EditNumber

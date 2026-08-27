@@ -5,30 +5,22 @@ import Link from "next/link";
 import { useCharacter } from "@/components/character-provider";
 import { SectionPanel } from "@/components/shell/section-panel";
 import {
-  isRowUnlocked,
-  MAX_CHARACTER_LEVEL,
+  levelRequiredFor,
+  MAX_TACTIC_LEVEL,
   SLOT_TABLE,
   slotCell,
   unlockedSlots,
 } from "@/lib/character";
 
-const COLUMNS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"];
+const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"];
 
 export function WarTacticsPanel() {
   const { character, update } = useCharacter();
   const { available, total, spent } = unlockedSlots(character);
-  const unlockedRows = Math.min(character.level, MAX_CHARACTER_LEVEL);
-
-  /** Gasta ou devolve um slot de uma célula específica da tabela. */
-  function setSpent(row: number, column: number, next: number) {
-    update((draft) => {
-      draft.warTactics.spent[row][column] = Math.max(0, next);
-    });
-  }
 
   return (
     <SectionPanel
-      title="War Tactics Slots"
+      title="Star Slots"
       subtitle="Use your tactical expertise to command the battlefield."
       trailing={
         <div className="text-right">
@@ -42,9 +34,8 @@ export function WarTacticsPanel() {
       }
       footer={
         <>
-          <p className="flex items-center gap-2 text-[0.58rem] uppercase tracking-[0.14em] text-bone-dim/70">
-            <Star filled className="h-3 w-3 text-brass" />
-            Higher level tactics are more powerful but limited in use.
+          <p className="text-[0.58rem] uppercase tracking-[0.14em] text-bone-dim/70">
+            Todos os star slots são recuperados numa long rest.
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -52,7 +43,7 @@ export function WarTacticsPanel() {
               disabled={spent === 0}
               onClick={() =>
                 update((draft) => {
-                  draft.warTactics.spent = draft.warTactics.spent.map((row) => row.map(() => 0));
+                  draft.warTactics.spent = draft.warTactics.spent.map(() => 0);
                 })
               }
               className="rounded-[2px] border border-line px-4 py-2 text-[0.58rem] uppercase tracking-[0.2em]
@@ -78,134 +69,143 @@ export function WarTacticsPanel() {
       }
     >
       <p className="mb-3 text-[0.6rem] uppercase tracking-[0.16em] text-bone-dim/60">
-        Levels 1–{unlockedRows} unlocked · click a star to expend a slot, click again to recover it
+        Level {character.level} · click a star to expend a slot, click again to recover it
       </p>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[620px] border-collapse text-center">
-          <thead>
-            <tr className="text-[0.6rem] uppercase tracking-[0.18em] text-brass">
-              <th className="border border-line-soft px-2 py-1.5 font-medium">Level</th>
-              {COLUMNS.map((column) => (
-                <th key={column} className="border border-line-soft px-1 py-1.5 font-medium">
-                  {column}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {SLOT_TABLE.map((row, rowIndex) => {
-              const level = rowIndex + 1;
-              const unlocked = isRowUnlocked(character, rowIndex);
-              const isCurrent = level === unlockedRows;
-              const locked = !unlocked;
+      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: MAX_TACTIC_LEVEL }, (_, index) => (
+          <li key={index}>
+            <StarSlot character={character} starLevel={index + 1} onChange={update} />
+          </li>
+        ))}
+      </ul>
 
-              return (
-                <tr
-                  key={level}
-                  className={
-                    isCurrent
-                      ? "bg-mil-dim/15 outline outline-1 -outline-offset-1 outline-mil-dim/60"
-                      : locked
-                        ? "opacity-30"
-                        : "bg-white/[0.02]"
-                  }
-                >
-                  <th
-                    scope="row"
-                    className={`border border-line-soft px-2 py-1 text-[0.7rem] font-medium tabular-nums ${
-                      isCurrent ? "text-mil-bright" : unlocked ? "text-bone" : "text-bone-dim"
-                    }`}
-                  >
-                    <span className="flex items-center justify-center gap-1">
-                      {level}
-                      {locked && <LockIcon className="h-2.5 w-2.5" />}
-                    </span>
-                  </th>
-
-                  {row.map((count, columnIndex) => (
-                    <td key={columnIndex} className="border border-line-soft px-1 py-1 align-middle">
-                      {count === 0 ? (
-                        <span className="text-bone-dim/40">—</span>
-                      ) : unlocked ? (
-                        <ActiveCell
-                          rowLevel={level}
-                          tacticLevel={columnIndex + 1}
-                          {...slotCell(character, rowIndex, columnIndex)}
-                          onChange={(next) => setSpent(rowIndex, columnIndex, next)}
-                        />
-                      ) : (
-                        <ReferenceCell count={count} />
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <details className="group/table mt-5">
+        <summary
+          className="flex cursor-pointer list-none items-center gap-2 border-t border-line-soft pt-3
+                     text-[0.55rem] uppercase tracking-[0.22em] text-bone-dim/60 transition-colors
+                     hover:text-bone [&::-webkit-details-marker]:hidden"
+        >
+          <span aria-hidden className="text-brass transition-transform group-open/table:rotate-90">
+            ▶
+          </span>
+          Progression table
+        </summary>
+        <ProgressionTable level={character.level} />
+      </details>
     </SectionPanel>
   );
 }
 
-/** Célula da linha do personagem: cada estrela é um slot clicável. */
-function ActiveCell({
-  rowLevel,
-  tacticLevel,
-  total,
-  spent,
-  available,
+/** Uma célula do quadro de Star Slots: cada estrela é um slot clicável. */
+function StarSlot({
+  character,
+  starLevel,
   onChange,
 }: {
-  rowLevel: number;
-  tacticLevel: number;
-  total: number;
-  spent: number;
-  available: number;
-  onChange: (next: number) => void;
+  character: Parameters<typeof slotCell>[0];
+  starLevel: number;
+  onChange: (recipe: (draft: Parameters<typeof slotCell>[0]) => void) => void;
 }) {
+  const { total, spent, available } = slotCell(character, starLevel);
+  const locked = total === 0;
+  const required = levelRequiredFor(starLevel);
+
   return (
-    <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[0.7rem] font-medium tabular-nums text-mil-bright">
-        {available}
-        <span className="text-bone-dim/50">/{total}</span>
-      </span>
-      <span className="flex justify-center gap-px">
-        {Array.from({ length: total }, (_, index) => {
-          const filled = index < available;
-          return (
-            <button
-              key={index}
-              type="button"
-              onClick={() => onChange(filled ? spent + 1 : spent - 1)}
-              aria-label={`Nível ${rowLevel}, tática de ${tacticLevel}º nível, slot ${index + 1} de ${total}: ${
-                filled ? "disponível — clique para gastar" : "gasto — clique para recuperar"
-              }`}
-              className="slot-star transition-transform hover:scale-125 focus-visible:outline-none
-                         focus-visible:ring-1 focus-visible:ring-mil-bright"
-            >
-              <Star
-                filled={filled}
-                className={`h-3 w-3 ${filled ? "text-brass" : "text-bone-dim/35"}`}
-              />
-            </button>
-          );
-        })}
-      </span>
+    <div
+      className={`flex h-full flex-col items-center justify-center gap-1.5 rounded-[2px] border px-3 py-3 ${
+        locked ? "border-line-soft/60 opacity-40" : "border-line bg-white/[0.02]"
+      }`}
+    >
+      <p className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-brass">
+        {starLevel}★
+      </p>
+
+      {locked ? (
+        <p className="text-[0.52rem] uppercase tracking-[0.16em] text-bone-dim">
+          Requires level {required ?? "—"}
+        </p>
+      ) : (
+        <>
+          <span className="flex flex-wrap justify-center gap-px">
+            {Array.from({ length: total }, (_, index) => {
+              const filled = index < available;
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() =>
+                    onChange((draft) => {
+                      draft.warTactics.spent[starLevel - 1] = Math.max(
+                        0,
+                        filled ? spent + 1 : spent - 1,
+                      );
+                    })
+                  }
+                  aria-label={`Slot ${index + 1} de ${total} do ${starLevel}º nível: ${
+                    filled ? "disponível — clique para gastar" : "gasto — clique para recuperar"
+                  }`}
+                  className="slot-star transition-transform hover:scale-125 focus-visible:outline-none
+                             focus-visible:ring-1 focus-visible:ring-mil-bright"
+                >
+                  <Star
+                    filled={filled}
+                    className={`h-4 w-4 ${filled ? "text-brass" : "text-bone-dim/30"}`}
+                  />
+                </button>
+              );
+            })}
+          </span>
+          <p className="text-[0.72rem] font-medium tabular-nums text-mil-bright">
+            {available}
+            <span className="text-bone-dim/50">/{total}</span>
+          </p>
+        </>
+      )}
     </div>
   );
 }
 
-function ReferenceCell({ count }: { count: number }) {
+/** A tabela de progressão, como referência — o documento não a traz na ficha. */
+function ProgressionTable({ level }: { level: number }) {
   return (
-    <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[0.65rem] tabular-nums text-brass/80">{count}</span>
-      <span className="flex justify-center gap-px">
-        {Array.from({ length: count }, (_, index) => (
-          <Star key={index} filled className="h-2 w-2 text-brass/70" />
-        ))}
-      </span>
+    <div className="mt-3 overflow-x-auto">
+      <table className="w-full min-w-[560px] border-collapse text-center text-[0.6rem]">
+        <thead>
+          <tr className="uppercase tracking-[0.16em] text-brass/80">
+            <th className="border border-line-soft px-2 py-1 font-medium">Lv</th>
+            {ORDINALS.map((column) => (
+              <th key={column} className="border border-line-soft px-1 py-1 font-medium">
+                {column}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {SLOT_TABLE.map((row, index) => {
+            const current = index + 1 === Math.min(level, SLOT_TABLE.length);
+            return (
+              <tr
+                key={index}
+                className={
+                  current
+                    ? "bg-mil-dim/20 text-mil-bright outline outline-1 -outline-offset-1 outline-mil-dim/60"
+                    : "text-bone-dim/50"
+                }
+              >
+                <th scope="row" className="border border-line-soft px-2 py-1 tabular-nums">
+                  {index + 1}
+                </th>
+                {row.map((count, column) => (
+                  <td key={column} className="border border-line-soft px-1 py-1 tabular-nums">
+                    {count || "—"}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -222,14 +222,6 @@ function Star({ filled, ...props }: { filled: boolean } & React.SVGProps<SVGSVGE
       {...props}
     >
       <path d="M12 1.6l3.1 6.6 7.1.7-5.4 4.8 1.6 7-6.4-3.6-6.4 3.6 1.6-7L1.8 8.9l7.1-.7z" />
-    </svg>
-  );
-}
-
-function LockIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden fill="currentColor" {...props}>
-      <path d="M6 10.5V7.5a6 6 0 1112 0v3h1.5v11h-15v-11zm3 0h6V7.5a3 3 0 10-6 0z" />
     </svg>
   );
 }

@@ -91,171 +91,15 @@
   ],
   "warTactics": {
     "spent": [
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ]
   },
   "tactics": [
@@ -401,6 +245,88 @@
       "atWill": false,
       "quote": "",
       "description": "Você invoca soldados armados e os ordena a proteger a área ao redor de um aliado. Os soldados fuzilam qualquer inimigo a 5 ft ao redor do alvo escolhido, fazendo inimigos na área terem desvantagem para atacar e terem sua AC reduzida em 1.",
+      "rule": "",
+      "scaling": "",
+      "orders": [],
+      "units": []
+    },
+    {
+      "id": "barbed-wire",
+      "name": "Barbed Wire",
+      "kind": "Action • 1★",
+      "atWill": false,
+      "quote": "",
+      "description": "Você invoca uma cerca de arame farpado em uma área de 1x4 em até 30 ft de você. Essa área é considerada terreno difícil, e criaturas que passarem por ela ou começarem seu turno nela recebem 2d4 de slashing damage.",
+      "rule": "",
+      "scaling": "",
+      "orders": [],
+      "units": []
+    },
+    {
+      "id": "fulton-recovery-system",
+      "name": "Fulton Recovery System",
+      "kind": "Action • 100 ft • 1★",
+      "atWill": false,
+      "quote": "",
+      "description": "Você puxa o rádio e aciona o sistema fulton para se transportar para outro lugar no campo de batalha. Até um range máximo de 100 ft, escolha um lugar que não esteja ocupado por uma criatura; no próximo turno você será transportado para lá, e esse movimento ignora reações.",
+      "rule": "Você será transportado mesmo se estiver inconsciente.",
+      "scaling": "",
+      "orders": [],
+      "units": []
+    },
+    {
+      "id": "decoy-maneuver",
+      "name": "Decoy Maneuver",
+      "kind": "Action • 1 minuto • 2★",
+      "atWill": false,
+      "quote": "",
+      "description": "Você agarra o ar, invocando na sua mão uma granada de fumaça que joga imediatamente nos próprios pés. A fumaça esconde você momentaneamente e, quando se dispersa, outras 3 cópias suas existem ao seu redor, imitando seus gestos e movimentos.",
+      "rule": "Toda vez que uma criatura acertar você durante a duração, role um d6 para cada cópia restante. Se qualquer d6 for 3 ou mais, uma das cópias é atingida no seu lugar e é destruída. As cópias ignoram qualquer outra fonte de dano ou efeito. A habilidade acaba quando as três cópias são destruídas.",
+      "scaling": "",
+      "orders": [],
+      "units": []
+    },
+    {
+      "id": "advanced-soldier",
+      "name": "Advanced Soldier",
+      "kind": "Action • Concentration, 1 minuto • 2★",
+      "atWill": false,
+      "quote": "",
+      "description": "Você invoca um soldado armado, melhor treinado que seus soldados comuns. O soldado compartilha da sua iniciativa e do seu attack roll. Você pode ordenar ele como uma free action no seu turno.",
+      "rule": "",
+      "scaling": "(+2★) O dano aumenta em 1d8.",
+      "orders": [],
+      "units": [
+        {
+          "id": "advanced-soldier-sheet",
+          "level": 0,
+          "name": "Advanced Soldier",
+          "ac": "9 + nível de ★",
+          "hp": "17 + 5 para cada nível acima de 1★",
+          "action": "Shoot! • Action, 60 ft range",
+          "description": "O soldado atira em um alvo à sua escolha. Faça um attack roll contra o alvo; se acertar, você dá 1d8 + wisdom de piercing damage."
+        }
+      ]
+    },
+    {
+      "id": "moral-up",
+      "name": "Moral Up",
+      "kind": "Action • 1 turno • 2★",
+      "atWill": false,
+      "quote": "",
+      "description": "Você profere palavras bonitas e muito salmo para seus aliados, os inspirando a lutar mais ferozmente. Escolha 3 aliados num range de até 30 ft para receber 1d6 + wisdom de vida temporária e +1d4 para acerto por 1 turno.",
+      "rule": "",
+      "scaling": "",
+      "orders": [],
+      "units": []
+    },
+    {
+      "id": "stealth-box",
+      "name": "Stealth Box",
+      "kind": "Action • Concentration, 1 hora • 2★",
+      "atWill": false,
+      "quote": "",
+      "description": "Você invoca uma confiável caixa de papelão capaz de esconder perfeitamente uma pessoa dos seus inimigos. A caixa comporta uma pessoa, e quem estiver dentro dela fica Invisível pela duração — ou até fazer um attack roll, dar dano ou usar uma habilidade, casos em que a caixa é desfeita e a habilidade se encerra.",
       "rule": "",
       "scaling": "",
       "orders": [],

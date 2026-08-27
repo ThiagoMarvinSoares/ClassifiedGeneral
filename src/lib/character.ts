@@ -87,32 +87,26 @@ export function slotsAtLevel(level: number): number[] {
 
 export type SlotCell = { total: number; spent: number; available: number };
 
-/** Estado de uma célula da tabela; o gasto nunca passa do que a linha concede. */
-export function slotCell(character: Character, row: number, column: number): SlotCell {
-  const total = SLOT_TABLE[row]?.[column] ?? 0;
-  const spent = Math.min(total, Math.max(0, character.warTactics.spent[row]?.[column] ?? 0));
+/**
+ * Slots de um nível de estrela. Vale só a linha do nível atual do personagem —
+ * é o que a página de Combat Status do documento mostra: no nível 4, 1★ 4/4 e
+ * 2★ 3/3, sete no total.
+ */
+export function slotCell(character: Character, starLevel: number): SlotCell {
+  const total = slotsAtLevel(character.level)[starLevel - 1] ?? 0;
+  const spent = Math.min(total, Math.max(0, character.warTactics.spent[starLevel - 1] ?? 0));
   return { total, spent, available: total - spent };
 }
 
-/** Uma linha está liberada quando o personagem já alcançou aquele nível. */
-export function isRowUnlocked(character: Character, row: number) {
-  return row < character.level;
-}
-
-/** Soma de todas as linhas liberadas — o que aparece em TOTAL AVAILABLE. */
+/** Soma dos nove níveis de estrela. */
 export function unlockedSlots(character: Character) {
   let total = 0;
   let spent = 0;
-
-  const rows = Math.min(character.level, MAX_CHARACTER_LEVEL);
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < MAX_TACTIC_LEVEL; column++) {
-      const cell = slotCell(character, row, column);
-      total += cell.total;
-      spent += cell.spent;
-    }
+  for (let star = 1; star <= MAX_TACTIC_LEVEL; star++) {
+    const cell = slotCell(character, star);
+    total += cell.total;
+    spent += cell.spent;
   }
-
   return { total, spent, available: total - spent };
 }
 
@@ -172,35 +166,30 @@ export type TacticLevelOption = {
   requiredLevel: number | null;
 };
 
-/** Os nove níveis de tática com o que o personagem tem em cada um. */
+/** Os nove níveis de estrela com o que o personagem tem em cada um. */
 export function tacticLevelOptions(character: Character): TacticLevelOption[] {
   return Array.from({ length: MAX_TACTIC_LEVEL }, (_, index) => {
-    const tacticLevel = index + 1;
-    let total = 0;
-    let available = 0;
-
-    const rows = Math.min(character.level, MAX_CHARACTER_LEVEL);
-    for (let row = 0; row < rows; row++) {
-      const cell = slotCell(character, row, index);
-      total += cell.total;
-      available += cell.available;
-    }
-
-    return { tacticLevel, total, available, requiredLevel: levelRequiredFor(tacticLevel) };
+    const { total, available } = slotCell(character, index + 1);
+    return {
+      tacticLevel: index + 1,
+      total,
+      available,
+      requiredLevel: levelRequiredFor(index + 1),
+    };
   });
 }
 
-/**
- * Primeira linha da tabela com um slot livre daquele nível — gasta-se a
- * reserva mais antiga primeiro. `null` quando não há nenhuma.
- */
-export function findAvailableSlotRow(character: Character, tacticLevel: number): number | null {
-  const rows = Math.min(character.level, MAX_CHARACTER_LEVEL);
-  for (let row = 0; row < rows; row++) {
-    if (slotCell(character, row, tacticLevel - 1).available > 0) return row;
-  }
-  return null;
-}
+/** Uma feature de classe, liberada num nível de ARMADA. */
+export type ClassFeature = {
+  id: string;
+  level: number;
+  name: string;
+  /** "Action", "10 minutos" — vazio quando é passiva. */
+  kind: string;
+  description: string;
+  /** Tabela da feature, quando ela tem uma (veículos do Catch a Ride). */
+  units: SummonUnit[];
+};
 
 export type ClassRow = {
   level: number;
@@ -239,9 +228,10 @@ export type Character = {
   };
   classTable: ClassRow[];
   skills: Skill[];
-  /** Gastos por linha da tabela: `spent[linha][nível da tática]`. */
-  warTactics: { spent: number[][] };
+  /** Gasto por nível de estrela: `spent[nível − 1]`. */
+  warTactics: { spent: number[] };
   tactics: Tactic[];
+  features: ClassFeature[];
   serviceRecord: ServiceRecord;
 };
 
@@ -260,6 +250,21 @@ export function skillModifier(character: Character, skill: Skill) {
   const bonus = proficiencyBonus(character.level);
   const factor = skill.proficiency === "expertise" ? 2 : skill.proficiency === "proficient" ? 1 : 0;
   return base + bonus * factor;
+}
+
+/** DC das habilidades: 8 + proficiência + Wisdom. */
+export function spellSaveDC(character: Character) {
+  return 8 + proficiencyBonus(character.level) + character.abilities.wisdom.modifier;
+}
+
+/** Attack roll das tropas: proficiência + Wisdom. */
+export function attackRoll(character: Character) {
+  return proficiencyBonus(character.level) + character.abilities.wisdom.modifier;
+}
+
+/** Dano base: o modificador de Wisdom. */
+export function baseDamageRoll(character: Character) {
+  return character.abilities.wisdom.modifier;
 }
 
 export function signed(value: number) {
@@ -326,12 +331,78 @@ export const DEFAULT_CHARACTER: Character = {
     languages: "Common",
   },
   classTable: [
-    { level: 1, bonus: "+2", features: "Summon Basic Soldier, Just Do It Command, A Good Rest" },
-    { level: 2, bonus: "+2", features: "Heavy Words" },
-    { level: 3, bonus: "+2", features: "Summon Jeep" },
+    { level: 1, bonus: "+2", features: "War Tactics, One Man Army, Designate Target" },
+    { level: 2, bonus: "+2", features: "Military Authority" },
+    { level: 3, bonus: "+2", features: "Catch a Ride" },
     { level: 4, bonus: "+2", features: "War Focused (ASI)" },
   ],
-  warTactics: { spent: emptySlotGrid() },
+  warTactics: { spent: Array.from({ length: MAX_TACTIC_LEVEL }, () => 0) },
+  features: [
+    {
+      id: "war-tactics",
+      level: 1,
+      name: "War Tactics",
+      kind: "",
+      description:
+        "Você é um invocador capaz de trazer à vida tudo que é relacionado à história militar da Terra. Você possui o que chamamos de WAR TACTICS, habilidades nascidas do seu próprio poder, usadas gastando STAR SLOTS — a sua capacidade de usá-las antes de esgotar o seu poder.\n\nOs STAR SLOTS têm diferentes potências, de uma estrela (1★) até nove (9★). Quanto mais estrelas, mais potente a habilidade é — ou se torna, quando usada numa potência acima da sua potência base.\n\nTodos os seus STAR SLOTS são recuperados ao fazer uma Long Rest.",
+      units: [],
+    },
+    {
+      id: "designate-target",
+      level: 1,
+      name: "Designate Target",
+      kind: "Action",
+      description:
+        "Graças à sua posição no campo de batalha, você é capaz de identificar fraquezas e aberturas na guarda do inimigo. Como uma Action, você grita um comando para um aliado, expondo a melhor forma de atacar um adversário.\n\nEscolha um aliado a 30 ft de você: ele terá vantagem no próximo roll de ataque.",
+      units: [],
+    },
+    {
+      id: "military-authority",
+      level: 2,
+      name: "Military Authority",
+      kind: "",
+      description:
+        "Como o comandante de um exército, você impõe sua autoridade dentro e fora dos campos de batalha. Você se torna proficiente e ganha expertise em Intimidation.",
+      units: [],
+    },
+    {
+      id: "catch-a-ride",
+      level: 3,
+      name: "Catch a Ride",
+      kind: "10 minutos",
+      description:
+        "Seu poder te dá acesso a vários métodos de locomoção. Gastando 10 minutos, você consegue invocar um veículo à sua escolha da tabela abaixo. A invocação é desfeita quando você quiser, usando uma Action, ou se o veículo chegar a 0 de HP.",
+      units: [
+        {
+          id: "indian-scout",
+          level: 3,
+          name: "Indian Scout (Moto)",
+          ac: "",
+          hp: "12",
+          action: "80 ft de Speed",
+          description: "Você invoca uma moto, capaz de transportar 2 pessoas.",
+        },
+        {
+          id: "jeep-willys",
+          level: 6,
+          name: "Jeep Willys",
+          ac: "",
+          hp: "40",
+          action: "90 ft de Speed",
+          description: "Você invoca um jeep, capaz de transportar 5 pessoas.",
+        },
+      ],
+    },
+    {
+      id: "war-focused",
+      level: 4,
+      name: "War Focused",
+      kind: "",
+      description:
+        "Seu foco é aumentado quando no campo de batalha. Você ganha os seguintes benefícios:\n\nASI. Seu Wisdom aumenta em +1.\n\nPain Resistance. Você tem vantagem em saves de Constitution para manter concentração em habilidades.\n\nAlways Prepared. Você pode adicionar seu bônus de proficiência à sua iniciativa.",
+      units: [],
+    },
+  ],
   serviceRecord: {
     title: "A Outra Vida",
     paragraphs: [
@@ -523,6 +594,97 @@ export const DEFAULT_CHARACTER: Character = {
       orders: [],
       units: [],
     },
+    {
+      id: "barbed-wire",
+      name: "Barbed Wire",
+      kind: "Action • 1★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você invoca uma cerca de arame farpado em uma área de 1x4 em até 30 ft de você. Essa área é considerada terreno difícil, e criaturas que passarem por ela ou começarem seu turno nela recebem 2d4 de slashing damage.",
+      rule: "",
+      scaling: "",
+      orders: [],
+      units: [],
+    },
+    {
+      id: "fulton-recovery-system",
+      name: "Fulton Recovery System",
+      kind: "Action • 100 ft • 1★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você puxa o rádio e aciona o sistema fulton para se transportar para outro lugar no campo de batalha. Até um range máximo de 100 ft, escolha um lugar que não esteja ocupado por uma criatura; no próximo turno você será transportado para lá, e esse movimento ignora reações.",
+      rule:
+        "Você será transportado mesmo se estiver inconsciente.",
+      scaling: "",
+      orders: [],
+      units: [],
+    },
+    {
+      id: "decoy-maneuver",
+      name: "Decoy Maneuver",
+      kind: "Action • 1 minuto • 2★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você agarra o ar, invocando na sua mão uma granada de fumaça que joga imediatamente nos próprios pés. A fumaça esconde você momentaneamente e, quando se dispersa, outras 3 cópias suas existem ao seu redor, imitando seus gestos e movimentos.",
+      rule:
+        "Toda vez que uma criatura acertar você durante a duração, role um d6 para cada cópia restante. Se qualquer d6 for 3 ou mais, uma das cópias é atingida no seu lugar e é destruída. As cópias ignoram qualquer outra fonte de dano ou efeito. A habilidade acaba quando as três cópias são destruídas.",
+      scaling: "",
+      orders: [],
+      units: [],
+    },
+    {
+      id: "advanced-soldier",
+      name: "Advanced Soldier",
+      kind: "Action • Concentration, 1 minuto • 2★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você invoca um soldado armado, melhor treinado que seus soldados comuns. O soldado compartilha da sua iniciativa e do seu attack roll. Você pode ordenar ele como uma free action no seu turno.",
+      rule: "",
+      scaling: "(+2★) O dano aumenta em 1d8.",
+      orders: [],
+      units: [
+        {
+          id: "advanced-soldier-sheet",
+          level: 0,
+          name: "Advanced Soldier",
+          ac: "9 + nível de ★",
+          hp: "17 + 5 para cada nível acima de 1★",
+          action: "Shoot! • Action, 60 ft range",
+          description:
+            "O soldado atira em um alvo à sua escolha. Faça um attack roll contra o alvo; se acertar, você dá 1d8 + wisdom de piercing damage.",
+        },
+      ],
+    },
+    {
+      id: "moral-up",
+      name: "Moral Up",
+      kind: "Action • 1 turno • 2★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você profere palavras bonitas e muito salmo para seus aliados, os inspirando a lutar mais ferozmente. Escolha 3 aliados num range de até 30 ft para receber 1d6 + wisdom de vida temporária e +1d4 para acerto por 1 turno.",
+      rule: "",
+      scaling: "",
+      orders: [],
+      units: [],
+    },
+    {
+      id: "stealth-box",
+      name: "Stealth Box",
+      kind: "Action • Concentration, 1 hora • 2★",
+      atWill: false,
+      quote: "",
+      description:
+        "Você invoca uma confiável caixa de papelão capaz de esconder perfeitamente uma pessoa dos seus inimigos. A caixa comporta uma pessoa, e quem estiver dentro dela fica Invisível pela duração — ou até fazer um attack roll, dar dano ou usar uma habilidade, casos em que a caixa é desfeita e a habilidade se encerra.",
+      rule: "",
+      scaling: "",
+      orders: [],
+      units: [],
+    },
   ],
   skills: SKILL_SEED.map(([name, ability, proficiency]) => ({
     id: name.toLowerCase().replace(/\s+/g, "-"),
@@ -531,12 +693,6 @@ export const DEFAULT_CHARACTER: Character = {
     proficiency,
   })),
 };
-
-function emptySlotGrid(): number[][] {
-  return Array.from({ length: MAX_CHARACTER_LEVEL }, () =>
-    Array.from({ length: MAX_TACTIC_LEVEL }, () => 0),
-  );
-}
 
 /* ── saneamento: o arquivo em disco nunca derruba a página ──── */
 
@@ -556,6 +712,30 @@ function int(value: unknown, fallback: number, min = -999, max = 9999) {
   return Math.min(max, Math.max(min, Math.round(parsed)));
 }
 
+function summonUnits(value: unknown, fallback: SummonUnit[]): SummonUnit[] {
+  return (Array.isArray(value) ? value : fallback).slice(0, 20).map((entry, i) => {
+    const unit = (entry ?? {}) as Record<string, unknown>;
+    const base = fallback[i] ?? {
+      id: `unit-${i}`,
+      level: 0,
+      name: "—",
+      ac: "",
+      hp: "",
+      action: "",
+      description: "",
+    };
+    return {
+      id: str(unit.id, base.id),
+      level: int(unit.level, base.level, 0, MAX_CHARACTER_LEVEL),
+      name: str(unit.name, base.name),
+      ac: str(unit.ac, base.ac),
+      hp: str(unit.hp, base.hp),
+      action: str(unit.action, base.action),
+      description: str(unit.description, base.description),
+    };
+  });
+}
+
 /** Aceita o formato antigo (lista de seções) pegando a primeira. */
 function serviceRecord(value: unknown, fallback: ServiceRecord): ServiceRecord {
   const source = (Array.isArray(value) ? value[0] : value) as Record<string, unknown> | undefined;
@@ -570,29 +750,17 @@ function serviceRecord(value: unknown, fallback: ServiceRecord): ServiceRecord {
   };
 }
 
-/**
- * Aceita a grade `[linha][coluna]` e também o formato antigo (uma lista só,
- * que era o gasto do nível atual) — nesse caso ela vira a linha daquele nível.
- */
-function slotGrid(value: unknown, level: number): number[][] {
-  const grid = emptySlotGrid();
-  if (!Array.isArray(value)) return grid;
+/** Aceita a lista de nove e também a grade antiga, somando as linhas dela. */
+function slotSpent(value: unknown): number[] {
+  const zeros = Array.from({ length: MAX_TACTIC_LEVEL }, () => 0);
+  if (!Array.isArray(value)) return zeros;
 
-  if (value.every((entry) => !Array.isArray(entry))) {
-    const row = Math.min(MAX_CHARACTER_LEVEL, Math.max(1, level)) - 1;
-    for (let column = 0; column < MAX_TACTIC_LEVEL; column++) {
-      grid[row][column] = int(value[column], 0, 0, 9);
-    }
-    return grid;
-  }
-
-  value.slice(0, MAX_CHARACTER_LEVEL).forEach((entry, row) => {
-    if (!Array.isArray(entry)) return;
-    for (let column = 0; column < MAX_TACTIC_LEVEL; column++) {
-      grid[row][column] = int(entry[column], 0, 0, 9);
-    }
-  });
-  return grid;
+  return zeros.map((_, index) =>
+    value.reduce<number>((soma, entry: unknown) => {
+      const cell = Array.isArray(entry) ? entry[index] : index === 0 ? entry : 0;
+      return soma + int(cell, 0, 0, 99);
+    }, 0),
+  );
 }
 
 /** Aceita tanto o formato antigo (só o score) quanto `{ score, modifier }`. */
@@ -672,7 +840,7 @@ export function sanitizeCharacter(input: unknown): Character {
         features: str(source.features, fallback.features),
       };
     }),
-    warTactics: { spent: slotGrid(((raw.warTactics ?? {}) as Record<string, unknown>).spent, level) },
+    warTactics: { spent: slotSpent(((raw.warTactics ?? {}) as Record<string, unknown>).spent) },
     tactics: (Array.isArray(raw.tactics) ? raw.tactics : base.tactics)
       .slice(0, 30)
       .map((row, index) => {
@@ -727,6 +895,27 @@ export function sanitizeCharacter(input: unknown): Character {
                 description: str(unit.description, unitFallback.description),
               };
             }),
+        };
+      }),
+    features: (Array.isArray(raw.features) ? raw.features : base.features)
+      .slice(0, 40)
+      .map((row, index) => {
+        const source = (row ?? {}) as Record<string, unknown>;
+        const fallback = base.features[index] ?? {
+          id: `feature-${index}`,
+          level: 1,
+          name: "—",
+          kind: "",
+          description: "",
+          units: [],
+        };
+        return {
+          id: str(source.id, fallback.id),
+          level: int(source.level, fallback.level, 1, MAX_CHARACTER_LEVEL),
+          name: str(source.name, fallback.name),
+          kind: str(source.kind, fallback.kind),
+          description: str(source.description, fallback.description),
+          units: summonUnits(source.units, fallback.units),
         };
       }),
     serviceRecord: serviceRecord(raw.serviceRecord, base.serviceRecord),

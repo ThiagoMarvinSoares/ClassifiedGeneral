@@ -6,7 +6,7 @@ import { useCharacter } from "@/components/character-provider";
 import { EditNumber, EditText } from "@/components/editable";
 import { SectionPanel } from "@/components/shell/section-panel";
 import { UseTacticDialog } from "@/components/war-tactics/use-tactic-dialog";
-import { findAvailableSlotRow, tacticLevelOptions, type Tactic } from "@/lib/character";
+import { slotCell, tacticLevelOptions, type Tactic } from "@/lib/character";
 
 /** As habilidades do Armada. Painel próprio: nem na ficha, nem na tabela. */
 export function TacticsPanel() {
@@ -123,11 +123,12 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
   const options = tacticLevelOptions(character);
   const anyAvailable = options.some((option) => option.available > 0);
 
-  /** Gasta um slot do nível escolhido, tirando da linha liberada mais baixa. */
+  /** Gasta um slot do nível escolhido. */
   function deploy(tacticLevel: number) {
     update((draft) => {
-      const row = findAvailableSlotRow(draft, tacticLevel);
-      if (row !== null) draft.warTactics.spent[row][tacticLevel - 1] += 1;
+      if (slotCell(draft, tacticLevel).available > 0) {
+        draft.warTactics.spent[tacticLevel - 1] += 1;
+      }
     });
     setPicking(false);
   }

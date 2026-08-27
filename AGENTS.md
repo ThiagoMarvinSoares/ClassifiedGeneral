@@ -100,15 +100,21 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
 - A progressão de slots (`SLOTS_BY_LEVEL` em `character.ts`) é a tabela do
   programa Armada, **não** a de conjurador pleno do 5e — L6 já abre 4º nível.
   Vai até o nível 15; acima disso repete a última linha.
-- Cada linha até o nível do personagem tem o **próprio** conjunto de slots —
-  não é só a linha do nível atual. Daí `warTactics.spent` ser uma grade
-  `[linha][nível da tática]`, e não uma lista.
+- Vale **só a linha do nível atual**: a página de Combat Status do documento
+  oficial mostra 1★ 4/4 e 2★ 3/3 no nível 4, sete no total. `warTactics.spent`
+  é uma lista de nove, um por nível de estrela.
 - Só o gasto vai para o disco. O total vem sempre da tabela, então subir ou
   descer de nível reajusta os slots sem migração.
-- `slotGrid` aceita o formato antigo (lista única) e o coloca na linha do nível
-  atual, para não perder gasto já registrado.
-- Linhas acima do nível ficam trancadas: sem estrela clicável e sem entrar na
-  conta do TOTAL AVAILABLE.
+- `slotSpent` aceita a grade antiga somando as linhas dela, para não perder
+  gasto já registrado.
+- Níveis de estrela que o personagem ainda não alcançou aparecem com o nível
+  exigido, sem estrela clicável.
+- `spellSaveDC`, `attackRoll` e `baseDamageRoll` são derivados de nível +
+  Wisdom, como o documento define. Nunca vão para o disco.
+- `features` são as features de classe por nível (War Tactics, Designate
+  Target, Military Authority, Catch a Ride, War Focused). One Man Army não está
+  ali: ela já vive em `tactics` como a básica, e duplicar significaria manter a
+  tabela de tropas em dois lugares.
 - A seção tem **dois painéis separados**: `WarTacticsPanel` (a tabela de slots),
   ao lado da ficha, e `TacticsPanel` (as habilidades), em largura inteira abaixo
   dos dois. Nenhum dos dois mora na ficha em papel.
