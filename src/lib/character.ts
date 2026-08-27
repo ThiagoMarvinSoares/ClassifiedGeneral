@@ -150,6 +150,8 @@ export type Tactic = {
   quote: string;
   description: string;
   rule: string;
+  /** Ganho ao gastar um slot acima do custo base ("Potência"). */
+  scaling: string;
   orders: TacticOrder[];
   units: SummonUnit[];
 };
@@ -366,6 +368,7 @@ export const DEFAULT_CHARACTER: Character = {
         "Você é o general que controla o campo de batalha por trás das linhas, ordenando seus aliados e suas tropas em direção à vitória. Seu trabalho é estratégico e não braçal, e por isso existem aqueles que lutam por você.",
       rule:
         "Você não possui a ação de Attack. No lugar dela, você é capaz de invocar tropas como uma free action e comandá-las no seu turno usando uma Bonus Action. Quanto maior o seu nível na classe ARMADA, maior a variação de tropas que você pode invocar para lutar ao seu lado.",
+      scaling: "",
       orders: [],
       units: [
         {
@@ -396,6 +399,7 @@ export const DEFAULT_CHARACTER: Character = {
         "Você solicita suporte aéreo. Uma aeronave das suas visões atravessa o campo de batalha e realiza uma única passada de ataque. Escolha uma área ou linha dentro do alcance permitido pelo sistema.",
       rule:
         "O dano deve ser equivalente à habilidade ofensiva forte disponível para um personagem de nível 4. Não permanece no campo: o avião entra, executa a missão e desaparece.",
+      scaling: "",
       orders: [],
       units: [],
     },
@@ -408,6 +412,7 @@ export const DEFAULT_CHARACTER: Character = {
       description:
         "Você emite uma ordem militar ensurdecedora, inspirando seus aliados através de uma combinação de autoridade absoluta, gritaria e uma confiança completamente desproporcional à situação.",
       rule: "Seu comando não precisa fazer sentido. O importante é que seja dito com convicção.",
+      scaling: "",
       orders: [
         {
           id: "advance",
@@ -434,6 +439,19 @@ export const DEFAULT_CHARACTER: Character = {
           role: "Buff",
         },
       ],
+      units: [],
+    },
+    {
+      id: "fire-in-the-hole",
+      name: "Fire in the Hole!",
+      kind: "Action • 1★",
+      atWill: false,
+      quote: "FIRE IN THE HOLE!",
+      description:
+        "Você invoca um soldado que joga uma granada no meio dos seus inimigos. Escolha uma área de 3x3; inimigos nessa área fazem um saving throw de Dexterity, e numa falha recebem 3d6 de fire damage, ou metade num sucesso.",
+      rule: "",
+      scaling: "(+1★) O dano aumenta em 1d6.",
+      orders: [],
       units: [],
     },
   ],
@@ -599,6 +617,7 @@ export function sanitizeCharacter(input: unknown): Character {
           quote: str(source.quote, fallback.quote),
           description: str(source.description, fallback.description),
           rule: str(source.rule, fallback.rule),
+          scaling: str(source.scaling, fallback.scaling),
           orders: (Array.isArray(source.orders) ? source.orders : []).slice(0, 12).map((entry, i) => {
             const order = (entry ?? {}) as Record<string, unknown>;
             const orderFallback = fallback.orders[i] ?? {

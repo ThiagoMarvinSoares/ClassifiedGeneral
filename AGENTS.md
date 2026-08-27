@@ -118,6 +118,10 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
 - `Tactic.units` são as tropas que a tática invoca, cada uma liberada num nível
   de classe. As de nível acima do personagem aparecem marcadas `LOCKED`. Quando
   a seção Personnel existir, é daqui que ela deve ler as tropas.
+- `Tactic.scaling` é a "Potência": o que a tática ganha ao ser usada com um slot
+  acima do custo base. Campo livre, porque cada tática escala de um jeito.
+- Campo de tática vazio não aparece com rótulo: o card mostra só o que tem, e o
+  `+ potência` / `+ balance rule` no rodapé cria o primeiro conteúdo.
 - Para as que gastam slot, o nível **não** é fixo: `USE` abre `UseTacticDialog`
   e o nível é escolhido ali — como conjurar em nível mais alto no D&D. Só então
   um slot é gasto, pela linha liberada mais baixa (`findAvailableSlotRow`).

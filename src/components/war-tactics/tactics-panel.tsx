@@ -29,6 +29,7 @@ export function TacticsPanel() {
                 quote: "",
                 description: "",
                 rule: "",
+                scaling: "",
                 orders: [],
                 units: [],
               });
@@ -134,18 +135,20 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
           className="block w-full text-[0.72rem] leading-relaxed text-bone-dim"
         />
 
-        <div>
-          <p className="mb-1 text-[0.5rem] font-medium uppercase tracking-[0.24em] text-bone-dim/60">
-            Balance rule
-          </p>
-          <EditText
-            label="Regra de equilíbrio"
-            value={tactic.rule}
-            multiline
-            onCommit={(next) => edit((t) => void (t.rule = next))}
-            className="block w-full text-[0.68rem] leading-relaxed text-bone-dim/80"
-          />
-        </div>
+        {tactic.rule && (
+          <div>
+            <p className="mb-1 text-[0.5rem] font-medium uppercase tracking-[0.24em] text-bone-dim/60">
+              Balance rule
+            </p>
+            <EditText
+              label="Regra de equilíbrio"
+              value={tactic.rule}
+              multiline
+              onCommit={(next) => edit((t) => void (t.rule = next))}
+              className="block w-full text-[0.68rem] leading-relaxed text-bone-dim/80"
+            />
+          </div>
+        )}
 
         {tactic.orders.length > 0 && (
           <ul className="space-y-2 border-t border-line-soft pt-3">
@@ -196,6 +199,21 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
               </li>
             ))}
           </ul>
+        )}
+
+        {tactic.scaling && (
+          <div>
+            <p className="mb-1 text-[0.5rem] font-medium uppercase tracking-[0.24em] text-brass/70">
+              Potência
+            </p>
+            <EditText
+              label="Escalonamento por slot extra"
+              value={tactic.scaling}
+              multiline
+              onCommit={(next) => edit((t) => void (t.scaling = next))}
+              className="block w-full text-[0.68rem] leading-relaxed text-bone-dim/80"
+            />
+          </div>
         )}
 
         {tactic.units.length > 0 && (
@@ -302,6 +320,24 @@ function TacticCard({ tactic, index }: { tactic: Tactic; index: number }) {
           >
             + Add unit
           </button>
+          {!tactic.rule && (
+            <button
+              type="button"
+              onClick={() => edit((t) => void (t.rule = "—"))}
+              className="text-[0.5rem] uppercase tracking-[0.2em] text-bone-dim/50 transition-colors hover:text-mil-bright"
+            >
+              + Balance rule
+            </button>
+          )}
+          {!tactic.scaling && (
+            <button
+              type="button"
+              onClick={() => edit((t) => void (t.scaling = "—"))}
+              className="text-[0.5rem] uppercase tracking-[0.2em] text-bone-dim/50 transition-colors hover:text-mil-bright"
+            >
+              + Potência
+            </button>
+          )}
           <button
             type="button"
             onClick={() => update((draft) => void draft.tactics.splice(index, 1))}
