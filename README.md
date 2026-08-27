@@ -1,0 +1,108 @@
+# ARMADA — Military Personnel System
+
+Ficha de personagem de RPG disfarçada de sistema militar confidencial.
+O jogador não abre uma ficha de D&D: ele acessa o dossiê do **General Armada**.
+
+## Rodando
+
+```bash
+npm install
+cp .env.example .env.local   # defina a senha de acesso
+npm run dev
+```
+
+Abre em <http://localhost:3000>.
+
+## Credenciais
+
+Ficam só em variável de ambiente — nada no cliente.
+
+| Variável              | Padrão   | O que é                          |
+| --------------------- | -------- | -------------------------------- |
+| `ARMADA_ACCESS_USER`  | `armada` | usuário aceito (case-insensitive) |
+| `ARMADA_ACCESS_CODE`  | —        | senha; sem ela o sistema recusa tudo |
+
+O `POST /api/auth` compara em tempo constante, espera 450 ms fixos e, em caso
+de acerto, grava um cookie `httpOnly` derivado do segredo (12 h). Trocar
+`ARMADA_ACCESS_CODE` invalida todas as sessões abertas.
+
+Fluxo: `/` → `/authenticating` (sequência, pulável com qualquer tecla ou
+clique) → `/dossier`. As duas últimas exigem o cookie; sem ele voltam para `/`.
+
+## Telas
+
+Fora do sistema: **login** ✅ e **sequência de autenticação** ✅.
+
+Dentro do sistema, a ficha em papel fica fixa à esquerda e o painel da direita
+muda por seção — paginadas 01–05 no rodapé:
+
+| # | Seção | Painéis |
+| - | ----- | ------- |
+| 01 | Dossier | Skills ✅ |
+| 02 | War tactics | Slots ✅ · Tactics ✅ |
+| 03 | Personnel | stub |
+| 04 | Service record | História ✅ |
+
+O resumo de combate (AC, HP, velocidade, inspiração, exaustão) fica na própria
+ficha em papel, então Combat Status não é uma seção separada.
+
+## A ficha
+
+Todo valor do dossiê é editável: clique nele, edite, `Enter` confirma e `Esc`
+descarta. As estrelas ao lado de cada perícia alternam
+sem proficiência → proficiente → especialista.
+
+O modificador de atributo pode ser digitado direto, para cobrir buff, item ou
+regra de mesa. Mexer no **score** reescreve o modificador com o valor derivado,
+então a sobrescrita é sempre deliberada.
+
+O modificador de perícia continua calculado (atributo + bônus de proficiência
+do nível) e acompanha qualquer mudança nos dois.
+
+A ficha vive em `data/character.json`, gravada automaticamente ~700 ms depois
+da última edição. Apagar o arquivo restaura a ficha inicial.
+
+## War Tactics
+
+Slots no modelo de conjurador: usar uma tática de nível N gasta uma estrela
+daquele nível. Clique numa estrela cheia para gastar, numa vazia para recuperar.
+**LONG REST** devolve tudo.
+
+**Cada linha até o seu nível tem os próprios slots.** No nível 4 valem as linhas
+1 a 4 somadas — 18 slots. As linhas acima ficam trancadas e não entram na conta;
+destravam conforme você sobe.
+
+A tabela é a do programa Armada (L6 já abre 4º nível), não a do conjurador pleno
+do 5e, e vai até o nível 15.
+
+Abaixo dela, em painel de largura inteira, ficam as **táticas** — One Man Army,
+Air Support e Tactical Command, com fala, descrição, balance rule, as ordens do
+Tactical Command e as tropas que One Man Army invoca. Tudo editável, e dá para
+adicionar e remover táticas, ordens e tropas.
+
+One Man Army é o ataque básico: ela substitui a ação de Attack, então é `AT WILL`
+e não tem botão USE. As tropas dela mostram em que nível de ARMADA são liberadas,
+e as que você ainda não alcançou aparecem `LOCKED`.
+
+Cada tática é marcada como `AT WILL` ou `SLOT`, e o rótulo alterna com um
+clique. Summon Soldier é `AT WILL` — ele entrega o ataque básico e não gasta
+nada, então nem tem botão USE.
+
+Nas de `SLOT`, o botão **USE** abre um diálogo perguntando em qual nível ela
+vai ser usada — 1º, 2º, e assim por diante, como conjurar em nível mais alto.
+Escolhido o nível, gasta-se um slot dele, tirado da linha liberada mais baixa.
+
+Os níveis que você ainda não alcançou aparecem no diálogo trancados, com o
+nível de personagem que os libera. **LONG REST** devolve todos os slots.
+
+## Service Record
+
+É outra página do mesmo documento em papel: retrato, assinatura e, da assinatura
+para baixo, a história escrita na folha. Sem bloco de identidade, atributos ou
+proficiências — isso é a página 1.
+
+Cada parágrafo se edita sozinho — clique nele. Apagar todo o texto de um parágrafo o remove, e o
+`+ parágrafo` que aparece ao passar o mouse insere um novo logo abaixo.
+
+A folha tem 760px e a coluna de texto 576px — prosa esticada é cansativa de ler,
+e o resto vira margem, como numa página de verdade.

@@ -1,0 +1,26 @@
+import { NextResponse } from "next/server";
+
+import { readCharacter, writeCharacter } from "@/lib/character-store";
+import { hasClearance } from "@/lib/session";
+
+export async function GET() {
+  if (!(await hasClearance())) {
+    return NextResponse.json({ ok: false, message: "NO CLEARANCE" }, { status: 401 });
+  }
+  return NextResponse.json({ ok: true, character: await readCharacter() });
+}
+
+export async function PUT(request: Request) {
+  if (!(await hasClearance())) {
+    return NextResponse.json({ ok: false, message: "NO CLEARANCE" }, { status: 401 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ ok: false, message: "MALFORMED RECORD" }, { status: 400 });
+  }
+
+  return NextResponse.json({ ok: true, character: await writeCharacter(body) });
+}

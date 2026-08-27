@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   ARMADA — Military Personnel System
+   Design tokens
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --font-display: var(--font-oswald), "Arial Narrow", Arial, sans-serif;
+  --font-stamp: var(--font-typewriter), "Courier New", monospace;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-signature: var(--font-script), cursive;
+
+  /* Dossiê / papel envelhecido */
+  --color-paper-50: #e2d3b6;
+  --color-paper-100: #d5c3a1;
+  --color-paper-200: #c6b189;
+  --color-paper-300: #b09a72;
+  --color-paper-400: #8f7a58;
+  --color-paper-500: #6d5c41;
+
+  --color-ink: #2b2721;
+  --color-ink-soft: #514738;
+  --color-stamp: #9d2f27;
+
+  /* Terminal seguro */
+  --color-void: #050706;
+  --color-panel: #080b09;
+  --color-panel-2: #0e1310;
+  --color-line: #1e2721;
+  --color-line-soft: #17201b;
+
+  --color-mil: #6f9a52;
+  --color-mil-dim: #47643a;
+  --color-mil-bright: #a9d488;
+  --color-brass: #8d7c42;
+  --color-bone: #c9c5b8;
+  --color-bone-dim: #85816f;
+  --color-alert: #c1493c;
+
+  --animate-caret: caret 1.1s steps(1) infinite;
+  --animate-flicker: flicker 6s linear infinite;
+  --animate-sweep: sweep 7s linear infinite;
+}
+
+@keyframes caret {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+@keyframes flicker {
+  0%, 96%, 100% { opacity: 1; }
+  97% { opacity: 0.86; }
+  98% { opacity: 1; }
+  98.6% { opacity: 0.92; }
+}
+
+@keyframes sweep {
+  0% { transform: translateY(-30%); }
+  100% { transform: translateY(130%); }
+}
+
+@keyframes stamp-in {
+  0% { opacity: 0; transform: rotate(-6deg) scale(1.6); }
+  60% { opacity: 1; transform: rotate(-2.2deg) scale(0.97); }
+  100% { opacity: 1; transform: rotate(-2.2deg) scale(1); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Texturas — tudo procedural, sem assets externos
+   ───────────────────────────────────────────────────────────── */
+
+/* Grão fino, aplicado por cima de qualquer superfície */
+@utility grain {
+  position: relative;
+}
+@utility grain-layer {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Fibra grossa de papel */
+@utility fiber-layer {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.035 0.2' numOctaves='5' seed='7'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+}
+
+/* Scanlines do terminal */
+@utility scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.28) 0px,
+    rgba(0, 0, 0, 0.28) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-bone);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-mil) 45%, transparent);
+    color: var(--color-bone);
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-bone);
+    -webkit-box-shadow: 0 0 0 1000px var(--color-panel-2) inset;
+    caret-color: var(--color-mil-bright);
+  }
+}
+
+/* Erosão de tinta — carimbos e selos gastos pelo tempo */
+@utility distress {
+  --distress-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.09' numOctaves='4' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 4 0 0 0 -1.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+  -webkit-mask-image: var(--distress-mask);
+  mask-image: var(--distress-mask);
+  -webkit-mask-size: 220px 220px;
+  mask-size: 220px 220px;
+}
+
+/* Letreiro de concreto — textura dentro do próprio glifo */
+@utility stone-text {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5 0.9' numOctaves='5' seed='11'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E"),
+    linear-gradient(178deg, #d8d4c6 0%, #b4b0a1 46%, #8e8b7d 100%);
+  background-size: 260px 260px, 100% 100%;
+  background-blend-mode: overlay, normal;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes grant-in {
+  0% { opacity: 0; transform: scale(1.3); letter-spacing: 0.6em; }
+  70% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); letter-spacing: 0.3em; }
+}
+
+@keyframes grant-glow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Edição no lugar: o campo herda a tipografia do slot onde está,
+   então o valor não "pula" ao virar input.
+   ───────────────────────────────────────────────────────────── */
+@utility editable {
+  cursor: text;
+  border-radius: 2px;
+  text-align: inherit;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: color-mix(in oklab, currentColor 12%, transparent);
+    box-shadow: inset 0 -1px 0 color-mix(in oklab, currentColor 50%, transparent);
+    outline: none;
+  }
+
+  /* 16px de texto não se acerta com o dedo; um valor de um dígito
+     também precisa de largura mínima */
+  @media (pointer: coarse) {
+    padding-block: 8px;
+    padding-inline: 6px;
+    min-width: 30px;
+  }
+}
+
+@utility editable-input {
+  width: 100%;
+  border-radius: 2px;
+  background-color: color-mix(in oklab, currentColor 14%, transparent);
+  box-shadow: inset 0 -1px 0 currentColor;
+  outline: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: inherit;
+  color: inherit;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Alvos de toque: no dedo, controles precisam de área maior que
+   no mouse. Só cresce sob `pointer: coarse` para o desktop
+   continuar com a densidade do documento.
+   ───────────────────────────────────────────────────────────── */
+@utility touch-target {
+  @media (pointer: coarse) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 34px;
+  }
+}
+
+/**
+ * Estrela de slot. No toque o alvo cresce — mas a estrela cresce junto,
+ * senão sobra um vão maior que a própria estrela entre uma e outra.
+ */
+@utility slot-star {
+  border-radius: 2px;
+  padding: 1px;
+
+  @media (pointer: coarse) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    min-height: 30px;
+
+    & > svg {
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+  }
+}
