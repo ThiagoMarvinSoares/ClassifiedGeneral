@@ -179,6 +179,21 @@ export function tacticLevelOptions(character: Character): TacticLevelOption[] {
   });
 }
 
+/** Um item do inventário. */
+export type InventoryItem = {
+  id: string;
+  name: string;
+  quantity: number;
+  notes: string;
+  /** Em uso agora, em oposição a guardado na mochila. */
+  equipped: boolean;
+};
+
+export type Inventory = {
+  coins: { gp: number; sp: number; cp: number };
+  items: InventoryItem[];
+};
+
 /** Uma feature de classe, liberada num nível de ARMADA. */
 export type ClassFeature = {
   id: string;
@@ -232,6 +247,7 @@ export type Character = {
   warTactics: { spent: number[] };
   tactics: Tactic[];
   features: ClassFeature[];
+  inventory: Inventory;
   serviceRecord: ServiceRecord;
 };
 
@@ -403,6 +419,10 @@ export const DEFAULT_CHARACTER: Character = {
       units: [],
     },
   ],
+  inventory: {
+    coins: { gp: 0, sp: 0, cp: 0 },
+    items: [],
+  },
   serviceRecord: {
     title: "A Outra Vida",
     paragraphs: [
@@ -736,6 +756,30 @@ function summonUnits(value: unknown, fallback: SummonUnit[]): SummonUnit[] {
   });
 }
 
+function inventory(value: unknown, fallback: Inventory): Inventory {
+  const raw = (value ?? {}) as Record<string, unknown>;
+  const coins = (raw.coins ?? {}) as Record<string, unknown>;
+  const items = Array.isArray(raw.items) ? raw.items : fallback.items;
+
+  return {
+    coins: {
+      gp: int(coins.gp, fallback.coins.gp, 0, 999999),
+      sp: int(coins.sp, fallback.coins.sp, 0, 999999),
+      cp: int(coins.cp, fallback.coins.cp, 0, 999999),
+    },
+    items: items.slice(0, 200).map((entry, index) => {
+      const item = (entry ?? {}) as Record<string, unknown>;
+      return {
+        id: str(item.id, `item-${index}`),
+        name: str(item.name, "—"),
+        quantity: int(item.quantity, 1, 0, 9999),
+        notes: typeof item.notes === "string" ? item.notes : "",
+        equipped: bool(item.equipped, false),
+      };
+    }),
+  };
+}
+
 /** Aceita o formato antigo (lista de seções) pegando a primeira. */
 function serviceRecord(value: unknown, fallback: ServiceRecord): ServiceRecord {
   const source = (Array.isArray(value) ? value[0] : value) as Record<string, unknown> | undefined;
@@ -918,6 +962,7 @@ export function sanitizeCharacter(input: unknown): Character {
           units: summonUnits(source.units, fallback.units),
         };
       }),
+    inventory: inventory(raw.inventory, base.inventory),
     serviceRecord: serviceRecord(raw.serviceRecord, base.serviceRecord),
     skills: skills.slice(0, 40).map((row, index) => {
       const source = (row ?? {}) as Record<string, unknown>;

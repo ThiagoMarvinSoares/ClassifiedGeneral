@@ -62,11 +62,12 @@ A UI é **em inglês militar** (é parte da ficção); comentários e docs em po
 ## Roadmap das telas
 
 Login ✅ · Authentication sequence ✅ · Dossier ✅ · War tactics ✅ ·
-Personnel · Service record ✅
+Footlocker ✅ · Service record ✅
 
 Combat status não é seção própria: o resumo de combate vive na ficha em papel
-e os slots foram para War Tactics. Dentro do sistema são 4 seções, paginadas
-01–04 no rodapé. `AppShell` mantém a
+e os slots foram para War Tactics. Personnel virou **Footlocker**, o inventário
+— as tropas invocadas já vivem em `tactics[].units`. Dentro do sistema são
+4 seções, paginadas 01–04 no rodapé. `AppShell` mantém a
 ficha em papel fixa à esquerda em todas elas; só o painel da direita muda.
 As seções não construídas usam `SectionStub`, então a navegação nunca dá 404.
 

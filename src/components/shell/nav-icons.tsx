@@ -25,12 +25,12 @@ export function TacticsIcon(props: IconProps) {
   );
 }
 
-export function PersonnelIcon(props: IconProps) {
+export function FootlockerIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden {...stroke} {...props}>
-      <circle cx="9" cy="8.4" r="3.4" />
-      <path d="M2.6 20c0-3.6 2.9-6 6.4-6s6.4 2.4 6.4 6" />
-      <path d="M16 5.6a3.4 3.4 0 010 6.6M17.4 14.6c2.4.6 4 2.6 4 5.4" />
+      <path d="M2.8 8.2h18.4v12.4H2.8z" />
+      <path d="M2.8 8.2 5 3.4h14L21.2 8.2" />
+      <path d="M9.6 12.4h4.8v2.6H9.6z" />
     </svg>
   );
 }

@@ -333,6 +333,75 @@
       "units": []
     }
   ],
+  "features": [
+    {
+      "id": "war-tactics",
+      "level": 1,
+      "name": "War Tactics",
+      "kind": "",
+      "description": "Você é um invocador capaz de trazer à vida tudo que é relacionado à história militar da Terra. Você possui o que chamamos de WAR TACTICS, habilidades nascidas do seu próprio poder, usadas gastando STAR SLOTS — a sua capacidade de usá-las antes de esgotar o seu poder.\n\nOs STAR SLOTS têm diferentes potências, de uma estrela (1★) até nove (9★). Quanto mais estrelas, mais potente a habilidade é — ou se torna, quando usada numa potência acima da sua potência base.\n\nTodos os seus STAR SLOTS são recuperados ao fazer uma Long Rest.",
+      "units": []
+    },
+    {
+      "id": "designate-target",
+      "level": 1,
+      "name": "Designate Target",
+      "kind": "Action",
+      "description": "Graças à sua posição no campo de batalha, você é capaz de identificar fraquezas e aberturas na guarda do inimigo. Como uma Action, você grita um comando para um aliado, expondo a melhor forma de atacar um adversário.\n\nEscolha um aliado a 30 ft de você: ele terá vantagem no próximo roll de ataque.",
+      "units": []
+    },
+    {
+      "id": "military-authority",
+      "level": 2,
+      "name": "Military Authority",
+      "kind": "",
+      "description": "Como o comandante de um exército, você impõe sua autoridade dentro e fora dos campos de batalha. Você se torna proficiente e ganha expertise em Intimidation.",
+      "units": []
+    },
+    {
+      "id": "catch-a-ride",
+      "level": 3,
+      "name": "Catch a Ride",
+      "kind": "10 minutos",
+      "description": "Seu poder te dá acesso a vários métodos de locomoção. Gastando 10 minutos, você consegue invocar um veículo à sua escolha da tabela abaixo. A invocação é desfeita quando você quiser, usando uma Action, ou se o veículo chegar a 0 de HP.",
+      "units": [
+        {
+          "id": "indian-scout",
+          "level": 3,
+          "name": "Indian Scout (Moto)",
+          "ac": "",
+          "hp": "12",
+          "action": "80 ft de Speed",
+          "description": "Você invoca uma moto, capaz de transportar 2 pessoas."
+        },
+        {
+          "id": "jeep-willys",
+          "level": 6,
+          "name": "Jeep Willys",
+          "ac": "",
+          "hp": "40",
+          "action": "90 ft de Speed",
+          "description": "Você invoca um jeep, capaz de transportar 5 pessoas."
+        }
+      ]
+    },
+    {
+      "id": "war-focused",
+      "level": 4,
+      "name": "War Focused",
+      "kind": "",
+      "description": "Seu foco é aumentado quando no campo de batalha. Você ganha os seguintes benefícios:\n\nASI. Seu Wisdom aumenta em +1.\n\nPain Resistance. Você tem vantagem em saves de Constitution para manter concentração em habilidades.\n\nAlways Prepared. Você pode adicionar seu bônus de proficiência à sua iniciativa.",
+      "units": []
+    }
+  ],
+  "inventory": {
+    "coins": {
+      "gp": 0,
+      "sp": 0,
+      "cp": 0
+    },
+    "items": []
+  },
   "serviceRecord": {
     "title": "A Outra Vida",
     "paragraphs": [

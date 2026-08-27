@@ -1,6 +1,6 @@
 import {
   DossierIcon,
-  PersonnelIcon,
+  FootlockerIcon,
   RecordIcon,
   TacticsIcon,
 } from "@/components/shell/nav-icons";
@@ -9,7 +9,7 @@ import {
 export const SECTIONS = [
   { href: "/dossier", label: "Dossier", nav: "Dossier", Icon: DossierIcon },
   { href: "/war-tactics", label: "War Tactics", nav: "War\nTactics", Icon: TacticsIcon },
-  { href: "/personnel", label: "Personnel", nav: "Personnel", Icon: PersonnelIcon },
+  { href: "/footlocker", label: "Footlocker", nav: "Footlocker", Icon: FootlockerIcon },
   { href: "/service-record", label: "Service Record", nav: "Service\nRecord", Icon: RecordIcon },
 ] as const;
 

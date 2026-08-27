@@ -40,7 +40,7 @@ muda por seção — paginadas 01–05 no rodapé:
 | - | ----- | ------- |
 | 01 | Dossier | Skills ✅ |
 | 02 | War tactics | Slots ✅ · Tactics ✅ |
-| 03 | Personnel | stub |
+| 03 | Footlocker | Inventário ✅ |
 | 04 | Service record | História ✅ |
 
 O resumo de combate (AC, HP, velocidade, inspiração, exaustão) fica na própria
@@ -109,3 +109,9 @@ Cada parágrafo se edita sozinho — clique nele. Apagar todo o texto de um par�
 
 A folha tem 760px e a coluna de texto 576px — prosa esticada é cansativa de ler,
 e o resto vira margem, como numa página de verdade.
+
+## Footlocker
+
+O inventário. Fundos em gold, silver e copper, e os itens com quantidade, notas
+e um marcador `CARRIED` / `STOWED` para separar o que está em uso do que está
+guardado. O contador do cabeçalho mostra quantos itens estão sendo carregados.
