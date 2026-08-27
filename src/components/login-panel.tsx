@@ -136,7 +136,7 @@ export function LoginPanel() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="USERNAME"
-              className={INPUT_CLASS}
+              className={`${INPUT_CLASS} uppercase`}
             />
           </Field>
 
@@ -162,6 +162,9 @@ export function LoginPanel() {
               name="password"
               type={reveal ? "text" : "password"}
               autoComplete="current-password"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
               disabled={busy}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -217,7 +220,7 @@ export function LoginPanel() {
 }
 
 const INPUT_CLASS =
-  "h-14 w-full border border-line bg-black/25 pl-14 pr-4 font-display text-sm uppercase tracking-[0.22em] " +
+  "h-14 w-full border border-line bg-black/25 pl-14 pr-4 font-display text-sm tracking-[0.22em] " +
   "text-bone caret-mil-bright placeholder:text-bone-dim/60 " +
   "transition-[border-color,box-shadow,background-color] duration-200 " +
   "hover:border-line/80 " +
