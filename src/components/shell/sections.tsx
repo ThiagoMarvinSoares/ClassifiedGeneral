@@ -9,7 +9,14 @@ import {
 export const SECTIONS = [
   { href: "/dossier", label: "Dossier", nav: "Dossier", Icon: DossierIcon },
   { href: "/war-tactics", label: "War Tactics", nav: "War\nTactics", Icon: TacticsIcon },
-  { href: "/footlocker", label: "Footlocker", nav: "Footlocker", Icon: FootlockerIcon },
+  {
+    href: "/footlocker",
+    label: "Footlocker",
+    nav: "Footlocker",
+    Icon: FootlockerIcon,
+    /** Abrir o baú soa como abrir um baú. */
+    sfx: "rummage",
+  },
   { href: "/service-record", label: "Service Record", nav: "Service\nRecord", Icon: RecordIcon },
 ] as const;
 

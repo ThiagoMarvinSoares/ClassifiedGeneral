@@ -15,13 +15,15 @@ export function SideNav() {
       className="flex shrink-0 gap-1 overflow-x-auto border-b border-line bg-panel/70 px-2 py-2
                  lg:w-[104px] lg:flex-col lg:gap-0 lg:overflow-visible lg:border-b-0 lg:border-r lg:px-0 lg:py-4"
     >
-      {SECTIONS.map(({ href, nav, Icon }, index) => {
+      {SECTIONS.map((section, index) => {
+        const { href, nav, Icon } = section;
         const active = index === current;
         return (
           <Link
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
+            data-sfx={"sfx" in section ? section.sfx : undefined}
             className={`group relative flex shrink-0 flex-col items-center gap-2 px-4 py-3 text-center
                         text-[0.58rem] font-medium uppercase leading-[1.35] tracking-[0.18em]
                         transition-colors lg:px-2 lg:py-5 ${

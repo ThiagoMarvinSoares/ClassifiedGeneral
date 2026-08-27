@@ -22,6 +22,7 @@ export function PageStrip() {
             key={section.href}
             href={section.href}
             aria-current={active ? "page" : undefined}
+            data-sfx={"sfx" in section ? section.sfx : undefined}
             title={section.label}
             className={`flex h-8 min-w-8 items-center justify-center rounded-full px-3 font-mono
                         text-[0.62rem] tracking-[0.14em] transition-colors ${

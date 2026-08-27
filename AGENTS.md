@@ -160,6 +160,10 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
 - Um ouvinte de clique só, no documento, em vez de `onClick` em cada botão. O
   elemento escolhe o som por `data-sfx="spend|restore|confirm|deny|rest|none"`;
   sem o atributo, botão/link/summary tocam o tick padrão.
+- `clank` e `rummage` não saem da tabela de notas: metal é inarmônico, então
+  `metalHit` soma parciais em razões não inteiras por um bandpass. `rummage`
+  encadeia de três a cinco batidas com tempo e altura sorteados — som repetido
+  idêntico vira ruído, o sorteio é o que faz soar como remexer.
 - Para som que não vem de clique (login negado, passos da sequência de
   autenticação), use o `play` do `useSfx`.
 - A preferência mora no `localStorage` e é lida com `useSyncExternalStore`, não

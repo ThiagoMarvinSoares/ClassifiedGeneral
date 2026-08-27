@@ -41,6 +41,7 @@ export function FootlockerPanel() {
               });
             })
           }
+          data-sfx="rummage"
           className="rounded-[2px] border border-line px-4 py-2 text-[0.58rem] uppercase tracking-[0.2em]
                      text-bone-dim transition-colors hover:border-mil-dim hover:text-mil-bright"
         >
@@ -90,6 +91,7 @@ export function FootlockerPanel() {
                   <button
                     type="button"
                     onClick={() => edit((i) => void (i.equipped = !i.equipped))}
+                    data-sfx="clank"
                     aria-label={`${item.name}: ${
                       item.equipped ? "em uso" : "guardado"
                     }. Clique para alternar`}
@@ -120,6 +122,7 @@ export function FootlockerPanel() {
                   <button
                     type="button"
                     onClick={() => update((draft) => void draft.inventory.items.splice(index, 1))}
+                    data-sfx="clank"
                     className="ml-auto text-[0.5rem] uppercase tracking-[0.2em] text-bone-dim/40
                                transition-colors hover:text-alert"
                   >
