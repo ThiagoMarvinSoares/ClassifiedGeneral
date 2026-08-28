@@ -21,11 +21,30 @@ import { DEFAULT_CHARACTER, sanitizeCharacter, type Character } from "@/lib/char
 const KEY = "armada:character";
 const FILE = join(process.cwd(), "data", "character.json");
 
+/**
+ * Acha a credencial do Redis no ambiente. Procura por sufixo em vez de nome
+ * exato porque cada integração batiza as variáveis à sua maneira — e algumas
+ * prefixam com o nome do recurso, como `ROSE_HOUSE_KV_REST_API_URL`.
+ */
+function credentials() {
+  const suffix = /(KV_REST_API_URL|UPSTASH_REDIS_REST_URL|REDIS_REST_URL)$/;
+
+  for (const [key, url] of Object.entries(process.env)) {
+    if (!url || !suffix.test(key)) continue;
+    const token = process.env[key.replace(/URL$/, "TOKEN")];
+    if (token) return { url, token };
+  }
+  return null;
+}
+
+/** Qual armazenamento está valendo — a rota expõe isso para diagnóstico. */
+export function storageKind(): "redis" | "file" {
+  return credentials() ? "redis" : "file";
+}
+
 function redis() {
-  const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
-  return new Redis({ url, token });
+  const found = credentials();
+  return found ? new Redis(found) : null;
 }
 
 /** A ficha versionada no repo, usada como semente na primeira leitura. */
