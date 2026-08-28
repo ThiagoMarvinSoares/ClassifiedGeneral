@@ -59,8 +59,21 @@ então a sobrescrita é sempre deliberada.
 O modificador de perícia continua calculado (atributo + bônus de proficiência
 do nível) e acompanha qualquer mudança nos dois.
 
-A ficha vive em `data/character.json`, gravada automaticamente ~700 ms depois
-da última edição. Apagar o arquivo restaura a ficha inicial.
+### Onde a ficha é gravada
+
+Em desenvolvimento, em `data/character.json` — dá para abrir, versionar e editar
+à mão. Apagar o arquivo restaura a ficha inicial.
+
+Em produção não dá para usar arquivo: o disco de uma função serverless é
+somente-leitura. Defina `KV_REST_API_URL` e `KV_REST_API_TOKEN` e a ficha passa
+a viver num Redis. Na Vercel isso é *Storage → Create Database → Upstash for
+Redis*, que injeta as duas variáveis sozinha; depois é só fazer redeploy.
+
+A troca é automática: com as variáveis, Redis; sem elas, arquivo. Na primeira
+leitura o Redis é semeado com o `data/character.json` do deploy, então a ficha
+que está no repo é a que aparece — nada se perde na migração.
+
+Nos dois casos a gravação é automática, ~700 ms depois da última edição.
 
 ## War Tactics
 

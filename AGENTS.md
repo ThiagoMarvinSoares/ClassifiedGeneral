@@ -39,7 +39,14 @@ A UI é **em inglês militar** (é parte da ficção); comentários e docs em po
   `paragraphs: string[]` e não num texto único: cada parágrafo é editável por si.
   Salvar um parágrafo vazio o remove. `sanitize` aceita o formato antigo (lista
   de seções) pegando a primeira.
-- `src/lib/character-store.ts` — o único módulo que toca `data/character.json`
+- `src/lib/character-store.ts` — o único módulo que sabe onde a ficha é gravada:
+  Redis quando há credencial (hospedagem serverless tem disco somente-leitura),
+  arquivo no resto. Na primeira leitura com o Redis vazio ele semeia com o
+  `data/character.json` que veio no deploy, senão o primeiro acesso mostraria a
+  ficha inicial no lugar da sua.
+- `outputFileTracingIncludes` no `next.config.ts` existe por causa dessa
+  semente: o caminho do arquivo é montado em runtime, então o tracing do Next
+  não o enxerga sozinho e ele não iria no bundle.
 - `src/components/` — componentes de tela; `insignia.tsx` guarda os SVGs auxiliares
 - `public/armada-emblem.png` — emblema oficial do programa; `src/app/icon.png` é
   o mesmo arquivo reduzido (favicon pela convenção de arquivo do App Router)
