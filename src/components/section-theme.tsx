@@ -5,18 +5,32 @@ import { useEffect } from "react";
 import { useSfx } from "@/components/sfx-provider";
 
 /**
- * Trilha de fundo de uma seção: toca em laço enquanto a seção está montada e
- * para ao sair. Obedece o alto-falante da barra superior, como o resto do som.
+ * Trilha de fundo de uma seção: as faixas se revezam enquanto a seção está
+ * montada e param ao sair. Obedece o alto-falante da barra superior, como o
+ * resto do som.
  */
-export function SectionTheme({ src, volume = 0.5 }: { src: string; volume?: number }) {
+export function SectionTheme({ tracks, volume = 0.5 }: { tracks: string[]; volume?: number }) {
   const { enabled } = useSfx();
+  const list = tracks.join("|");
 
   useEffect(() => {
     if (!enabled) return;
 
-    const audio = new Audio(src);
-    audio.loop = true;
+    const sources = list.split("|");
+    // começa numa faixa qualquer: entrar na seção sempre pela mesma música
+    // faria o revezamento sumir para quem só passa rápido
+    let index = Math.floor(Math.random() * sources.length);
+
+    const audio = new Audio(sources[index]);
     audio.volume = 0;
+
+    // ao acabar, entra a próxima — o laço é da lista, não da faixa
+    const next = () => {
+      index = (index + 1) % sources.length;
+      audio.src = sources[index];
+      void audio.play().catch(() => {});
+    };
+    audio.addEventListener("ended", next);
 
     let timer = 0;
 
@@ -39,29 +53,27 @@ export function SectionTheme({ src, volume = 0.5 }: { src: string; volume?: numb
     // o navegador recusa áudio sem gesto do usuário; navegar pelo menu conta,
     // mas abrir a URL direto não — nesse caso, tenta de novo no primeiro toque
     let retry: (() => void) | null = null;
-    const start = () => {
-      audio.play().then(
-        () => fade(volume),
-        () => {
-          retry = () => {
-            audio.play().then(() => fade(volume), () => {});
-            document.removeEventListener("pointerdown", retry!);
-            retry = null;
-          };
-          document.addEventListener("pointerdown", retry);
-        },
-      );
-    };
-    start();
+    audio.play().then(
+      () => fade(volume),
+      () => {
+        retry = () => {
+          void audio.play().then(() => fade(volume), () => {});
+          document.removeEventListener("pointerdown", retry!);
+          retry = null;
+        };
+        document.addEventListener("pointerdown", retry);
+      },
+    );
 
     return () => {
       if (retry) document.removeEventListener("pointerdown", retry);
+      audio.removeEventListener("ended", next);
       fade(0, () => {
         audio.pause();
         audio.src = "";
       });
     };
-  }, [enabled, src, volume]);
+  }, [enabled, list, volume]);
 
   return null;
 }

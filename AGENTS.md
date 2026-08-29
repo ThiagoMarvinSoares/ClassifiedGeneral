@@ -192,10 +192,12 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
   parte de um clique, o `AudioContext` é criado na primeira vez e resumido se
   estiver suspenso.
 - `SectionTheme` é a exceção ao "nada de binário": trilha de fundo não dá para
-  sintetizar. Toca em laço enquanto a seção está montada, obedece o mesmo
-  alto-falante e entra e sai por rampa de volume — corte seco é agressivo.
-  Abrir a URL direto pode ser recusado pelo navegador; nesse caso ele tenta de
-  novo no primeiro toque.
+  sintetizar. As faixas se revezam enquanto a seção está montada — o laço é da
+  lista, não da faixa — e a entrada sorteia por qual começar, senão quem passa
+  rápido pela seção ouviria sempre a mesma.
+- Obedece o mesmo alto-falante do resto e entra e sai por rampa de volume:
+  corte seco numa trilha é agressivo. Abrir a URL direto pode ser recusado pelo
+  navegador; nesse caso ele tenta de novo no primeiro toque.
 
 ## War Chronicles
 
