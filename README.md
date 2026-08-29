@@ -135,7 +135,7 @@ A interface tem som: um tick nos cliques, um tom descendente ao gastar um star
 slot e ascendente ao recuperar, um acorde na long rest, e confirmação ou recusa
 no login. Tudo sintetizado na hora, sem arquivo de áudio.
 
-War Chronicles tem trilha própria: duas faixas que se revezam a 50% de volume
+War Chronicles tem trilha própria: duas faixas que se revezam a 20% de volume
 enquanto você está na seção, começando por uma sorteada. São os únicos arquivos
 de áudio do projeto.
 

@@ -9,7 +9,14 @@ import { useSfx } from "@/components/sfx-provider";
  * montada e param ao sair. Obedece o alto-falante da barra superior, como o
  * resto do som.
  */
-export function SectionTheme({ tracks, volume = 0.5 }: { tracks: string[]; volume?: number }) {
+export function SectionTheme({
+  tracks,
+  /** Fundo de interface: alto o bastante para dar clima, baixo para não competir com a leitura. */
+  volume = 0.2,
+}: {
+  tracks: string[];
+  volume?: number;
+}) {
   const { enabled } = useSfx();
   const list = tracks.join("|");
 
