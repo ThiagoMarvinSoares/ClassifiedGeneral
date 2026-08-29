@@ -402,6 +402,15 @@
     },
     "items": []
   },
+  "chronicles": [
+    {
+      "id": "the-call-to-arms",
+      "title": "The Call to Arms",
+      "summary": "In a world on the brink of chaos, you receive the orders that will change everything.",
+      "locked": false,
+      "paragraphs": []
+    }
+  ],
   "serviceRecord": {
     "title": "A Outra Vida",
     "paragraphs": [

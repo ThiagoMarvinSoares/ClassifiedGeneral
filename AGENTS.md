@@ -76,8 +76,9 @@ Footlocker ✅ · Service record ✅
 
 Combat status não é seção própria: o resumo de combate vive na ficha em papel
 e os slots foram para War Tactics. Personnel virou **Footlocker**, o inventário
-— as tropas invocadas já vivem em `tactics[].units`. Dentro do sistema são
-4 seções, paginadas 01–04 no rodapé. `AppShell` mantém a
+— as tropas invocadas já vivem em `tactics[].units`. **War Chronicles** é a
+campanha contada em capítulos, que vão sendo destrancados. Dentro do sistema
+são 5 seções, paginadas 01–05 no rodapé. `AppShell` mantém a
 ficha em papel fixa à esquerda em todas elas; só o painel da direita muda.
 As seções não construídas usam `SectionStub`, então a navegação nunca dá 404.
 
@@ -178,3 +179,13 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
 - O navegador só libera áudio depois de um gesto do usuário; como todo som
   parte de um clique, o `AudioContext` é criado na primeira vez e resumido se
   estiver suspenso.
+
+## War Chronicles
+
+- Um capítulo é `{ title, summary, locked, paragraphs }`. Trancado troca o OPEN
+  por um cadeado e o `<details>` não abre — o `preventDefault` no summary é o
+  que segura.
+- O botão Lock/Unlock vive **dentro** do summary, então ele também precisa de
+  `preventDefault`: sem isso, trancar um capítulo o abriria junto.
+- Cada card é um `PaperSurface` próprio: é papel solto numa prancheta, não uma
+  folha só. Parágrafo esvaziado é removido, como no Service Record.

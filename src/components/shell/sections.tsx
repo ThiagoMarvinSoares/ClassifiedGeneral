@@ -1,6 +1,7 @@
 import {
   DossierIcon,
   FootlockerIcon,
+  ChronicleIcon,
   RecordIcon,
   TacticsIcon,
 } from "@/components/shell/nav-icons";
@@ -18,6 +19,12 @@ export const SECTIONS = [
     sfx: "rummage",
   },
   { href: "/service-record", label: "Service Record", nav: "Service\nRecord", Icon: RecordIcon },
+  {
+    href: "/chronicles",
+    label: "War Chronicles",
+    nav: "War\nChronicles",
+    Icon: ChronicleIcon,
+  },
 ] as const;
 
 export type Section = (typeof SECTIONS)[number];

@@ -42,6 +42,7 @@ muda por seção — paginadas 01–05 no rodapé:
 | 02 | War tactics | Slots ✅ · Tactics ✅ |
 | 03 | Footlocker | Inventário ✅ |
 | 04 | Service record | História ✅ |
+| 05 | War Chronicles | Capítulos ✅ |
 
 O resumo de combate (AC, HP, velocidade, inspiração, exaustão) fica na própria
 ficha em papel, então Combat Status não é uma seção separada.
@@ -140,3 +141,11 @@ no baú, e mexer numa peça dá uma batida só. Nunca sai igual duas vezes.
 
 O alto-falante na barra superior liga e desliga, e a escolha fica guardada no
 navegador.
+
+## War Chronicles
+
+A campanha contada em capítulos. Cada um tem título, uma chamada de duas linhas
+e o texto em si, que abre no card. Capítulo trancado mostra cadeado no lugar do
+OPEN e não abre — o `LOCK` / `UNLOCK` no cabeçalho alterna.
+
+Começa com um capítulo; `+ ADD CHAPTER` acrescenta os próximos, já trancados.

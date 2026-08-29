@@ -179,6 +179,17 @@ export function tacticLevelOptions(character: Character): TacticLevelOption[] {
   });
 }
 
+/** Um capítulo da campanha. */
+export type Chapter = {
+  id: string;
+  title: string;
+  /** A chamada de duas linhas que aparece no card fechado. */
+  summary: string;
+  /** Trancado mostra cadeado no lugar do OPEN. */
+  locked: boolean;
+  paragraphs: string[];
+};
+
 /** Um item do inventário. */
 export type InventoryItem = {
   id: string;
@@ -248,6 +259,7 @@ export type Character = {
   tactics: Tactic[];
   features: ClassFeature[];
   inventory: Inventory;
+  chronicles: Chapter[];
   serviceRecord: ServiceRecord;
 };
 
@@ -423,6 +435,16 @@ export const DEFAULT_CHARACTER: Character = {
     coins: { gp: 0, sp: 0, cp: 0 },
     items: [],
   },
+  chronicles: [
+    {
+      id: "the-call-to-arms",
+      title: "The Call to Arms",
+      summary:
+        "In a world on the brink of chaos, you receive the orders that will change everything.",
+      locked: false,
+      paragraphs: [],
+    },
+  ],
   serviceRecord: {
     title: "A Outra Vida",
     paragraphs: [
@@ -963,6 +985,29 @@ export function sanitizeCharacter(input: unknown): Character {
         };
       }),
     inventory: inventory(raw.inventory, base.inventory),
+    chronicles: (Array.isArray(raw.chronicles) ? raw.chronicles : base.chronicles)
+      .slice(0, 100)
+      .map((row, index) => {
+        const source = (row ?? {}) as Record<string, unknown>;
+        const fallback = base.chronicles[index] ?? {
+          id: `chapter-${index}`,
+          title: "—",
+          summary: "",
+          locked: true,
+          paragraphs: [],
+        };
+        const paragraphs = Array.isArray(source.paragraphs) ? source.paragraphs : [];
+        return {
+          id: str(source.id, fallback.id),
+          title: str(source.title, fallback.title),
+          summary: typeof source.summary === "string" ? source.summary : fallback.summary,
+          locked: bool(source.locked, fallback.locked),
+          paragraphs: paragraphs
+            .slice(0, 300)
+            .map((entry) => (typeof entry === "string" ? entry : ""))
+            .filter((entry) => entry.trim() !== ""),
+        };
+      }),
     serviceRecord: serviceRecord(raw.serviceRecord, base.serviceRecord),
     skills: skills.slice(0, 40).map((row, index) => {
       const source = (row ?? {}) as Record<string, unknown>;

@@ -35,6 +35,16 @@ export function FootlockerIcon(props: IconProps) {
   );
 }
 
+export function ChronicleIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden {...stroke} {...props}>
+      <path d="M12 6.4C10 4.6 7.2 4 3.4 4.4v13.4C7.2 17.4 10 18 12 19.8" />
+      <path d="M12 6.4c2-1.8 4.8-2.4 8.6-2v13.4c-3.8-.4-6.6.2-8.6 2z" />
+      <path d="M12 6.4v13.4" />
+    </svg>
+  );
+}
+
 export function RecordIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden {...stroke} {...props}>
