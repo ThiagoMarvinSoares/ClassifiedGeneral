@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { PROSE } from "@/components/long-form";
+
 /**
  * Caracteres por segundo. Leitura confortável fica perto de 20 c/s, então este
  * ritmo vai bem à frente de quem lê — dá para acompanhar sem esperar, e ainda
@@ -87,7 +89,7 @@ export function TypedBlocks({
           return (
             <p
               key={index}
-              className="mt-8 text-[0.95rem] font-bold uppercase tracking-[0.14em] text-ink first:mt-0"
+              className={`${PROSE.gapHeading} ${PROSE.heading} text-ink first:mt-0`}
             >
               {text.replace(/^##\s?/, "")}
               {caret}
@@ -97,14 +99,14 @@ export function TypedBlocks({
 
         if (block.trim() === "---") {
           return (
-            <p key={index} className="my-6 text-center text-[0.7rem] text-ink-soft/50">
+            <p key={index} className={`my-7 text-center ${PROSE.rule} text-ink-soft/50`}>
               ★
             </p>
           );
         }
 
         return (
-          <p key={index} className="mt-4 text-[0.8rem] leading-[1.9] text-ink/90 first:mt-0">
+          <p key={index} className={`${PROSE.gapBody} ${PROSE.body} text-ink/90 first:mt-0`}>
             {text}
             {caret}
           </p>

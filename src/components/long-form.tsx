@@ -64,8 +64,8 @@ export function LongForm({
             if (event.key === "Escape") setDraft(null);
             if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) commit();
           }}
-          className={`block w-full resize-none rounded-[2px] border p-4 text-[0.8rem]
-                      leading-[1.9] outline-none ${skin.area}`}
+          className={`block w-full resize-none rounded-[2px] border p-5 outline-none
+                      ${PROSE.body} ${skin.area}`}
         />
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <button
@@ -95,7 +95,7 @@ export function LongForm({
   return (
     <div>
       {blocks.length === 0 ? (
-        <p className={`text-[0.72rem] uppercase tracking-[0.16em] ${skin.empty}`}>{empty}</p>
+        <p className={`text-[0.8rem] uppercase tracking-[0.16em] ${skin.empty}`}>{empty}</p>
       ) : (
         <div>
           {blocks.map((block, index) => (
@@ -117,6 +117,18 @@ export function LongForm({
 }
 
 type Tone = "paper" | "panel";
+
+/**
+ * Tipografia do texto longo, num lugar só: a datilografia e o editor precisam
+ * casar exatamente, senão o texto "pula" quando a máquina termina de escrever.
+ */
+export const PROSE = {
+  body: "text-[1rem] leading-[1.75]",
+  heading: "text-[1.15rem] font-bold uppercase tracking-[0.12em]",
+  rule: "text-[0.85rem]",
+  gapBody: "mt-5",
+  gapHeading: "mt-10",
+} as const;
 
 const TONES = {
   paper: {
@@ -158,9 +170,7 @@ export function Block({
   if (block.startsWith("## ")) {
     return (
       <p
-        className={`text-[0.95rem] font-bold uppercase tracking-[0.14em] ${skin.heading} ${
-          first ? "" : "mt-8"
-        }`}
+        className={`${PROSE.heading} ${skin.heading} ${first ? "" : PROSE.gapHeading}`}
       >
         {block.replace(/^##\s+/, "")}
       </p>
@@ -168,10 +178,10 @@ export function Block({
   }
 
   if (block.trim() === "---") {
-    return <p className={`my-6 text-center text-[0.7rem] ${skin.rule}`}>★</p>;
+    return <p className={`my-7 text-center ${PROSE.rule} ${skin.rule}`}>★</p>;
   }
 
   return (
-    <p className={`text-[0.8rem] leading-[1.9] ${skin.body} ${first ? "" : "mt-4"}`}>{block}</p>
+    <p className={`${PROSE.body} ${skin.body} ${first ? "" : PROSE.gapBody}`}>{block}</p>
   );
 }

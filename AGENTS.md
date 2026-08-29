@@ -112,6 +112,10 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
   fundos: a história no papel, as features no painel escuro.
 - A área de texto cresce com o conteúdo: rolagem dentro de caixa é péssima
   para escrever.
+- A tipografia da prosa fica em `PROSE`, exportado por `long-form.tsx`. A
+  datilografia dos capítulos e o editor precisam casar exatamente, senão o
+  texto "pula" no instante em que a máquina termina de escrever. Um lugar só
+  impede que os dois divirjam.
 - `sanitizeCharacter` valida campo a campo na entrada e na saída: arquivo
   corrompido cai na ficha inicial em vez de derrubar a página.
 
