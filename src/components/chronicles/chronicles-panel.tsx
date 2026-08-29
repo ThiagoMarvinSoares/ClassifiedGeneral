@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { useCharacter } from "@/components/character-provider";
 import { TypedBlocks, useTypewriter } from "@/components/chronicles/typewriter";
+import { LongForm } from "@/components/long-form";
 import { EditText } from "@/components/editable";
 import { PaperSurface } from "@/components/paper";
 import { SectionPanel } from "@/components/shell/section-panel";
@@ -146,13 +147,7 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
 
         {/* o capítulo em si */}
         <div className="border-t border-ink/20 px-5 py-5 sm:px-8">
-          <div className="max-w-[68ch]">
-            {chapter.paragraphs.length === 0 && (
-              <p className="text-[0.72rem] uppercase tracking-[0.16em] text-ink-soft/70">
-                Capítulo ainda não escrito.
-              </p>
-            )}
-
+          <div>
             {!typing.done ? (
               <TypedBlocks
                 blocks={chapter.paragraphs}
@@ -160,76 +155,25 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
                 onSkip={typing.skip}
               />
             ) : (
-              <div className="space-y-4">
-                {chapter.paragraphs.map((paragraph, paragraphIndex) => {
-                  const commit = (next: string) =>
-                    edit((c) => {
-                      // parágrafo esvaziado é parágrafo removido
-                      if (next) c.paragraphs[paragraphIndex] = next;
-                      else c.paragraphs.splice(paragraphIndex, 1);
-                    });
-                  const label = `Parágrafo ${paragraphIndex + 1} do capítulo ${number}`;
-
-                  // convenção de escrita: "## " abre um subtítulo, "---" é
-                  // quebra de cena. Editando, o texto cru aparece.
-                  if (paragraph.startsWith("## ")) {
-                    return (
-                      <EditText
-                        key={paragraphIndex}
-                        label={label}
-                        value={paragraph}
-                        onCommit={commit}
-                        format={(value) => value.replace(/^##\s+/, "")}
-                        className="mt-8 block text-[0.95rem] font-bold uppercase tracking-[0.14em] text-ink first:mt-0"
-                      />
-                    );
-                  }
-
-                  if (paragraph.trim() === "---") {
-                    return (
-                      <EditText
-                        key={paragraphIndex}
-                        label={label}
-                        value={paragraph}
-                        onCommit={commit}
-                        format={() => "★"}
-                        className="my-6 block w-full text-center text-[0.7rem] text-ink-soft/50"
-                      />
-                    );
-                  }
-
-                  return (
-                    <EditText
-                      key={paragraphIndex}
-                      label={label}
-                      value={paragraph}
-                      multiline
-                      onCommit={commit}
-                      className="block w-full text-[0.8rem] leading-[1.9] text-ink/90"
-                    />
-                  );
-                })}
-              </div>
+              <LongForm
+                label={`Texto do capítulo ${number}`}
+                blocks={chapter.paragraphs}
+                onCommit={(next) => edit((c) => void (c.paragraphs = next))}
+                empty="Capítulo ainda não escrito."
+              />
             )}
           </div>
 
           {typing.done && (
-          <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-ink/15 pt-3">
-            <button
-              type="button"
-              onClick={() => edit((c) => void c.paragraphs.push("—"))}
-              className="editable px-2 py-1 text-[0.5rem] uppercase tracking-[0.2em] text-ink-soft"
-            >
-              + Parágrafo
-            </button>
-            <button
-              type="button"
-              onClick={() => update((draft) => void draft.chronicles.splice(index, 1))}
-              className="editable ml-auto px-2 py-1 text-[0.5rem] uppercase tracking-[0.2em] text-ink-soft"
-            >
-              − Remove chapter
-            </button>
-          </div>
+            <div className="mt-5 border-t border-ink/15 pt-3 text-right">
+              <button
+                type="button"
+                onClick={() => update((draft) => void draft.chronicles.splice(index, 1))}
+                className="editable px-2 py-1 text-[0.5rem] uppercase tracking-[0.2em] text-ink-soft"
+              >
+                − Remove chapter
+              </button>
+            </div>
           )}
         </div>
       </details>

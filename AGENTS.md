@@ -103,7 +103,15 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
   A barra superior mostra o estado do autosave.
 - `EditText` / `EditNumber` herdam a tipografia do slot onde estão — por isso
   o valor não "pula" ao virar input. Um estado só (`draft: string | null`),
-  sem espelhar o valor externo.
+  sem espelhar o valor externo. Servem para **valores**: um número, um nome.
+- Texto longo usa `LongForm`, um editor só para o documento inteiro. Campo por
+  parágrafo serve para corrigir uma frase; para *escrever* é hostil — não dá
+  para ver o todo nem mover coisas de lugar. O armazenamento continua sendo
+  lista de blocos; a conversão acontece na entrada e na saída do editor.
+- `LongForm` tem duas paletas (`tone="paper" | "panel"`) porque vive nos dois
+  fundos: a história no papel, as features no painel escuro.
+- A área de texto cresce com o conteúdo: rolagem dentro de caixa é péssima
+  para escrever.
 - `sanitizeCharacter` valida campo a campo na entrada e na saída: arquivo
   corrompido cai na ficha inicial em vez de derrubar a página.
 

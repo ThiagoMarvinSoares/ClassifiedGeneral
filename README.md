@@ -121,8 +121,7 @@ proficiências — isso é a página 1.
 Cada parágrafo se edita sozinho — clique nele. Apagar todo o texto de um parágrafo o remove, e o
 `+ parágrafo` que aparece ao passar o mouse insere um novo logo abaixo.
 
-A folha tem 760px e a coluna de texto 576px — prosa esticada é cansativa de ler,
-e o resto vira margem, como numa página de verdade.
+O texto ocupa a largura da folha, com a margem do próprio papel.
 
 ## Footlocker
 
@@ -152,7 +151,6 @@ Começa com um capítulo; `+ ADD CHAPTER` acrescenta os próximos, já trancados
 
 Ao abrir, o capítulo é datilografado na tela, a cerca de 220 caracteres por
 segundo — à frente de quem lê, sem virar espera. **PULAR A DATILOGRAFIA**
-mostra tudo de uma vez, e só então o texto fica editável.
+mostra tudo de uma vez, e só então aparece o **EDITAR TEXTO**.
 
-Dentro do capítulo, um parágrafo que começa com `## ` vira subtítulo e um `---`
-sozinho vira quebra de cena.
+O editor é o mesmo do Service Record: o capítulo inteiro num campo só.

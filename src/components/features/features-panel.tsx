@@ -2,6 +2,7 @@
 
 import { useCharacter } from "@/components/character-provider";
 import { EditNumber, EditText } from "@/components/editable";
+import { LongForm } from "@/components/long-form";
 import { SectionPanel } from "@/components/shell/section-panel";
 
 /** As features de classe do ARMADA, por nível. */
@@ -54,22 +55,13 @@ export function FeaturesPanel() {
               </header>
 
               <div className="space-y-3 px-4 py-3">
-                {feature.description.split("\n\n").map((paragrafo, i) => (
-                  <EditText
-                    key={i}
-                    label={`Parágrafo ${i + 1} de ${feature.name}`}
-                    value={paragrafo}
-                    multiline
-                    onCommit={(next) =>
-                      edit((f) => {
-                        const partes = f.description.split("\n\n");
-                        partes[i] = next;
-                        f.description = partes.filter(Boolean).join("\n\n");
-                      })
-                    }
-                    className="block w-full text-[0.72rem] leading-relaxed text-bone-dim"
-                  />
-                ))}
+                <LongForm
+                  tone="panel"
+                  label={`Descrição de ${feature.name}`}
+                  blocks={feature.description.split("\n\n").filter(Boolean)}
+                  onCommit={(next) => edit((f) => void (f.description = next.join("\n\n")))}
+                  empty="Feature ainda não descrita."
+                />
 
                 {feature.units.length > 0 && (
                   <ul className="space-y-2 border-t border-line-soft pt-3">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCharacter } from "@/components/character-provider";
 import { PortraitBlock } from "@/components/dossier/portrait-block";
 import { EditText } from "@/components/editable";
+import { LongForm } from "@/components/long-form";
 import { Paperclip } from "@/components/insignia";
 import { PaperSurface } from "@/components/paper";
 
@@ -66,39 +67,14 @@ export function ServiceRecordSheet() {
           </div>
         </div>
 
-        {/* a história, datilografada no papel */}
-        <div className="max-w-[36rem] space-y-5 pt-1">
-          {paragraphs.map((paragraph, index) => (
-            <div key={index} className="group/paragraph relative">
-              <EditText
-                label={`Parágrafo ${index + 1}`}
-                value={paragraph}
-                multiline
-                onCommit={(next) =>
-                  update((draft) => {
-                    // parágrafo esvaziado é parágrafo removido
-                    if (next) draft.serviceRecord.paragraphs[index] = next;
-                    else draft.serviceRecord.paragraphs.splice(index, 1);
-                  })
-                }
-                className="block w-full text-[0.82rem] leading-[1.95] tracking-[0.01em] text-ink/90"
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  update((draft) => {
-                    draft.serviceRecord.paragraphs.splice(index + 1, 0, "—");
-                  })
-                }
-                aria-label={`Inserir parágrafo depois do ${index + 1}`}
-                className="absolute -bottom-3.5 left-0 text-[0.5rem] uppercase tracking-[0.2em]
-                           text-ink/0 transition-colors hover:text-stamp focus-visible:text-stamp
-                           group-hover/paragraph:text-ink-soft/50"
-              >
-                + parágrafo
-              </button>
-            </div>
-          ))}
+        {/* a história */}
+        <div className="pt-1">
+          <LongForm
+            label="História do personagem"
+            blocks={paragraphs}
+            onCommit={(next) => update((draft) => void (draft.serviceRecord.paragraphs = next))}
+            empty="História ainda não escrita."
+          />
         </div>
 
         <footer className="flex items-center justify-between gap-4 border-t border-ink/20 pt-4">
