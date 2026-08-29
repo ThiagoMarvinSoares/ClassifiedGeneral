@@ -149,3 +149,10 @@ e o texto em si, que abre no card. Capítulo trancado mostra cadeado no lugar do
 OPEN e não abre — o `LOCK` / `UNLOCK` no cabeçalho alterna.
 
 Começa com um capítulo; `+ ADD CHAPTER` acrescenta os próximos, já trancados.
+
+Ao abrir, o capítulo é datilografado na tela, a cerca de 220 caracteres por
+segundo — à frente de quem lê, sem virar espera. **PULAR A DATILOGRAFIA**
+mostra tudo de uma vez, e só então o texto fica editável.
+
+Dentro do capítulo, um parágrafo que começa com `## ` vira subtítulo e um `---`
+sozinho vira quebra de cena.

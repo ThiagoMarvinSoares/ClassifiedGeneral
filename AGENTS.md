@@ -194,3 +194,11 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
   a convenção sem precisar de um menu de formatação.
 - `EditText` aceita um `format` que muda só o que é exibido; a edição continua
   no texto cru. É o que esconde o `##` sem escondê-lo de quem edita.
+- Ao abrir, o capítulo é **datilografado** (`useTypewriter`). Enquanto sai, o
+  texto não é editável — os campos entram só quando termina, senão clicar para
+  ler viraria clicar para editar.
+- O progresso mora junto do estado que o gerou (`{ active, revealed }`) e o
+  reset é derivado na renderização. Corrigir por efeito faria o texto pronto
+  piscar antes de recomeçar.
+- `<details>` aqui é **controlado**: o `onToggle` não dispara de forma
+  confiável no momento em que a datilografia precisa começar.

@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+
 import { useCharacter } from "@/components/character-provider";
+import { TypedBlocks, useTypewriter } from "@/components/chronicles/typewriter";
 import { EditText } from "@/components/editable";
 import { PaperSurface } from "@/components/paper";
 import { SectionPanel } from "@/components/shell/section-panel";
@@ -57,16 +60,23 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
 
   const number = String(index + 1).padStart(2, "0");
 
+  // o capítulo é datilografado ao abrir; enquanto sai, não se edita
+  const [open, setOpen] = useState(false);
+  const typing = useTypewriter(chapter.paragraphs, open && chapter.paragraphs.length > 0);
+
   return (
     <PaperSurface crease={false} className="shadow-[0_10px_26px_-14px_rgba(0,0,0,0.85)]">
-      <details className="group/chapter">
+      {/* aberto de forma controlada: o onToggle do <details> não é confiável
+          para disparar a datilografia no momento certo */}
+      <details open={open} className="group/chapter">
         <summary
           className={`flex list-none items-stretch gap-4 [&::-webkit-details-marker]:hidden ${
             chapter.locked ? "cursor-default" : "cursor-pointer"
           }`}
           onClick={(event) => {
+            event.preventDefault();
             // capítulo trancado não abre; o cadeado é a explicação
-            if (chapter.locked) event.preventDefault();
+            if (!chapter.locked) setOpen((value) => !value);
           }}
         >
           {/* número do capítulo */}
@@ -103,7 +113,9 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
             <button
               type="button"
               onClick={(event) => {
+                // o clique não pode chegar ao summary e abrir o capítulo
                 event.preventDefault();
+                event.stopPropagation();
                 edit((c) => void (c.locked = !c.locked));
               }}
               aria-label={`Capítulo ${number}: ${
@@ -134,62 +146,74 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
 
         {/* o capítulo em si */}
         <div className="border-t border-ink/20 px-5 py-5 sm:px-8">
-          <div className="max-w-[68ch] space-y-4">
+          <div className="max-w-[68ch]">
             {chapter.paragraphs.length === 0 && (
               <p className="text-[0.72rem] uppercase tracking-[0.16em] text-ink-soft/70">
                 Capítulo ainda não escrito.
               </p>
             )}
-            {chapter.paragraphs.map((paragraph, paragraphIndex) => {
-              const commit = (next: string) =>
-                edit((c) => {
-                  // parágrafo esvaziado é parágrafo removido
-                  if (next) c.paragraphs[paragraphIndex] = next;
-                  else c.paragraphs.splice(paragraphIndex, 1);
-                });
-              const label = `Parágrafo ${paragraphIndex + 1} do capítulo ${number}`;
 
-              // convenção de escrita: "## " abre um subtítulo, "---" é quebra
-              // de cena. Editando, o texto cru aparece — é como se descobre.
-              if (paragraph.startsWith("## ")) {
-                return (
-                  <EditText
-                    key={paragraphIndex}
-                    label={label}
-                    value={paragraph}
-                    onCommit={commit}
-                    format={(value) => value.replace(/^##\s+/, "")}
-                    className="mt-8 block text-[0.95rem] font-bold uppercase tracking-[0.14em] text-ink first:mt-0"
-                  />
-                );
-              }
+            {!typing.done ? (
+              <TypedBlocks
+                blocks={chapter.paragraphs}
+                lengthOf={typing.lengthOf}
+                onSkip={typing.skip}
+              />
+            ) : (
+              <div className="space-y-4">
+                {chapter.paragraphs.map((paragraph, paragraphIndex) => {
+                  const commit = (next: string) =>
+                    edit((c) => {
+                      // parágrafo esvaziado é parágrafo removido
+                      if (next) c.paragraphs[paragraphIndex] = next;
+                      else c.paragraphs.splice(paragraphIndex, 1);
+                    });
+                  const label = `Parágrafo ${paragraphIndex + 1} do capítulo ${number}`;
 
-              if (paragraph.trim() === "---") {
-                return (
-                  <EditText
-                    key={paragraphIndex}
-                    label={label}
-                    value={paragraph}
-                    onCommit={commit}
-                    format={() => "★"}
-                    className="my-6 block w-full text-center text-[0.7rem] text-ink-soft/50"
-                  />
-                );
-              }
+                  // convenção de escrita: "## " abre um subtítulo, "---" é
+                  // quebra de cena. Editando, o texto cru aparece.
+                  if (paragraph.startsWith("## ")) {
+                    return (
+                      <EditText
+                        key={paragraphIndex}
+                        label={label}
+                        value={paragraph}
+                        onCommit={commit}
+                        format={(value) => value.replace(/^##\s+/, "")}
+                        className="mt-8 block text-[0.95rem] font-bold uppercase tracking-[0.14em] text-ink first:mt-0"
+                      />
+                    );
+                  }
 
-              return (
-                <EditText
-                  key={paragraphIndex}
-                  label={label}
-                  value={paragraph}
-                  multiline
-                  onCommit={commit}
-                  className="block w-full text-[0.8rem] leading-[1.9] text-ink/90"
-                />
-              );
-            })}
+                  if (paragraph.trim() === "---") {
+                    return (
+                      <EditText
+                        key={paragraphIndex}
+                        label={label}
+                        value={paragraph}
+                        onCommit={commit}
+                        format={() => "★"}
+                        className="my-6 block w-full text-center text-[0.7rem] text-ink-soft/50"
+                      />
+                    );
+                  }
+
+                  return (
+                    <EditText
+                      key={paragraphIndex}
+                      label={label}
+                      value={paragraph}
+                      multiline
+                      onCommit={commit}
+                      className="block w-full text-[0.8rem] leading-[1.9] text-ink/90"
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
 
+          {typing.done && (
           <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-ink/15 pt-3">
             <button
               type="button"
@@ -206,6 +230,7 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
               − Remove chapter
             </button>
           </div>
+          )}
         </div>
       </details>
     </PaperSurface>
