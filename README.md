@@ -135,6 +135,9 @@ A interface tem som: um tick nos cliques, um tom descendente ao gastar um star
 slot e ascendente ao recuperar, um acorde na long rest, e confirmação ou recusa
 no login. Tudo sintetizado na hora, sem arquivo de áudio.
 
+War Chronicles tem trilha própria, em laço a 50% de volume enquanto você está
+na seção. O único arquivo de áudio do projeto.
+
 O Footlocker soa a metal: abrir a seção ou adicionar um item soa como remexer
 no baú, e mexer numa peça dá uma batida só. Nunca sai igual duas vezes.
 

@@ -41,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# trilha de fundo: música de terceiros, fica fora do repositório público
+/public/typewriter-theme.mp3
