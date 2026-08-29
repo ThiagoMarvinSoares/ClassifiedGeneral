@@ -140,22 +140,54 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
                 Capítulo ainda não escrito.
               </p>
             )}
-            {chapter.paragraphs.map((paragraph, paragraphIndex) => (
-              <EditText
-                key={paragraphIndex}
-                label={`Parágrafo ${paragraphIndex + 1} do capítulo ${number}`}
-                value={paragraph}
-                multiline
-                onCommit={(next) =>
-                  edit((c) => {
-                    // parágrafo esvaziado é parágrafo removido
-                    if (next) c.paragraphs[paragraphIndex] = next;
-                    else c.paragraphs.splice(paragraphIndex, 1);
-                  })
-                }
-                className="block w-full text-[0.8rem] leading-[1.9] text-ink/90"
-              />
-            ))}
+            {chapter.paragraphs.map((paragraph, paragraphIndex) => {
+              const commit = (next: string) =>
+                edit((c) => {
+                  // parágrafo esvaziado é parágrafo removido
+                  if (next) c.paragraphs[paragraphIndex] = next;
+                  else c.paragraphs.splice(paragraphIndex, 1);
+                });
+              const label = `Parágrafo ${paragraphIndex + 1} do capítulo ${number}`;
+
+              // convenção de escrita: "## " abre um subtítulo, "---" é quebra
+              // de cena. Editando, o texto cru aparece — é como se descobre.
+              if (paragraph.startsWith("## ")) {
+                return (
+                  <EditText
+                    key={paragraphIndex}
+                    label={label}
+                    value={paragraph}
+                    onCommit={commit}
+                    format={(value) => value.replace(/^##\s+/, "")}
+                    className="mt-8 block text-[0.95rem] font-bold uppercase tracking-[0.14em] text-ink first:mt-0"
+                  />
+                );
+              }
+
+              if (paragraph.trim() === "---") {
+                return (
+                  <EditText
+                    key={paragraphIndex}
+                    label={label}
+                    value={paragraph}
+                    onCommit={commit}
+                    format={() => "★"}
+                    className="my-6 block w-full text-center text-[0.7rem] text-ink-soft/50"
+                  />
+                );
+              }
+
+              return (
+                <EditText
+                  key={paragraphIndex}
+                  label={label}
+                  value={paragraph}
+                  multiline
+                  onCommit={commit}
+                  className="block w-full text-[0.8rem] leading-[1.9] text-ink/90"
+                />
+              );
+            })}
           </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-ink/15 pt-3">

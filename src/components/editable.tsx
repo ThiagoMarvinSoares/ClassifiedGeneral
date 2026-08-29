@@ -16,10 +16,13 @@ export function EditText({
   className = "",
   placeholder = "—",
   multiline = false,
+  format,
 }: Common & {
   value: string;
   onCommit: (next: string) => void;
   multiline?: boolean;
+  /** Só muda o que aparece; a edição continua no texto cru. */
+  format?: (value: string) => string;
 }) {
   // `null` = fora de edição. Um estado só, então não há rascunho para
   // ressincronizar quando o valor muda por fora.
@@ -84,7 +87,7 @@ export function EditText({
       aria-label={`${label}: ${value || placeholder}. Clique para editar`}
       className={`editable ${className}`}
     >
-      {value || <span className="opacity-40">{placeholder}</span>}
+      {value ? (format ? format(value) : value) : <span className="opacity-40">{placeholder}</span>}
     </button>
   );
 }

@@ -189,3 +189,8 @@ Alvo grande com ícone pequeno vira um vão maior que o próprio ícone.
   `preventDefault`: sem isso, trancar um capítulo o abriria junto.
 - Cada card é um `PaperSurface` próprio: é papel solto numa prancheta, não uma
   folha só. Parágrafo esvaziado é removido, como no Service Record.
+- Dentro do capítulo, um parágrafo que começa com `## ` vira subtítulo e `---`
+  vira quebra de cena. Ao editar, o texto cru aparece — é assim que se descobre
+  a convenção sem precisar de um menu de formatação.
+- `EditText` aceita um `format` que muda só o que é exibido; a edição continua
+  no texto cru. É o que esconde o `##` sem escondê-lo de quem edita.
